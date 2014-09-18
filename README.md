@@ -24,3 +24,9 @@ function wds_required_plugins_add( $required ) {
 }
 add_filter( 'wds_required_plugins', 'wds_required_plugins_add' );
 ```
+
+#### Changelog
+* 0.1.1
+	* Automatically activate required plugins (if they are available).
+* 0.1.0
+	* Hellow World.

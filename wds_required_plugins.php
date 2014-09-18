@@ -5,7 +5,7 @@ Plugin URI: http://webdevstudios.com
 Description: Make certain plugins required so that they cannot be (easily) deactivated.
 Author: WebDevStudios
 Author URI: http://webdevstudios.com
-Version: 0.1.0
+Version: 0.1.1
 License: GPLv2
 */
 
@@ -49,8 +49,24 @@ class WDS_Required_Plugins {
 	 * @since 0.1.0
 	 */
 	private function __construct() {
+		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
 		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
 	}
+
+
+	/**
+	 * Activate required plugins if they are not.
+	 *
+	 * @since 0.1.1
+	 */
+	public function activate_if_not() {
+		foreach ( $this->get_required_plugins() as $plugin ) {
+			if ( ! is_plugin_active( $plugin ) ) {
+				activate_plugin( $plugin );
+			}
+		}
+	}
+
 
 	/**
 	 * Remove the deactivation link for all custom/required plugins
