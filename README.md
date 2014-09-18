@@ -1,7 +1,10 @@
 WDS Required Plugins
 =========
 
-A library intended for mu-plugins and used in [wd_s](https://github.com/WebDevStudios/wd_s) that allows a theme or plugin to filter the list of required plugins so that the deactivate links are removed. More to come.
+A library intended for mu-plugins and used in [wd_s](https://github.com/WebDevStudios/wd_s) that allows a theme or plugin to filter the list of required plugins so that:
+* The deactivate links are removed.
+* Plugins are automatically activated (if they are in the plugins directory)
+* More to come.
 
 #### Example Usage:
 ```php
