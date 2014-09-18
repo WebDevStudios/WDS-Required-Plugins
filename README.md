@@ -29,4 +29,4 @@ add_filter( 'wds_required_plugins', 'wds_required_plugins_add' );
 * 0.1.1
 	* Automatically activate required plugins (if they are available).
 * 0.1.0
-	* Hellow World.
+	* Hello World.
