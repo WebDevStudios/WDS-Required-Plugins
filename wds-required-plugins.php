@@ -5,7 +5,7 @@ Plugin URI: http://webdevstudios.com
 Description: Make certain plugins required so that they cannot be (easily) deactivated.
 Author: WebDevStudios
 Author URI: http://webdevstudios.com
-Version: 0.1.1
+Version: 0.1.2
 Domain: wds-required-plugins
 License: GPLv2
 Path: languages
