@@ -71,7 +71,8 @@ class WDS_Required_Plugins {
 	public function activate_if_not() {
 		foreach ( $this->get_required_plugins() as $plugin ) {
 			if ( ! is_plugin_active( $plugin ) ) {
-				activate_plugin( $plugin );
+				// Filter if you don't want the required plugin to network-activate by default.
+				activate_plugin( $plugin, null, apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) );
 			}
 		}
 	}
