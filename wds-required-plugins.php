@@ -45,6 +45,12 @@ class WDS_Required_Plugins {
 	private static $is_multisite = false;
 
 	/**
+	 * Text/markup for required text
+	 * @var string
+	 */
+	private $required_text = '';
+
+	/**
 	 * Creates or returns an instance of this class.
 	 * @since  0.1.0
 	 * @return WDS_Required_Plugins A single instance of this class.
@@ -66,6 +72,7 @@ class WDS_Required_Plugins {
 		self::$is_multisite = is_multisite();
 
 		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
+		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
 		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
 		if ( self::$is_multisite ) {
 			add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
@@ -88,6 +95,10 @@ class WDS_Required_Plugins {
 		}
 	}
 
+	public function required_text_markup() {
+		$this->required_text = apply_filters( 'wds_required_plugins_text', sprintf( '<span style="color: #888">%s</span>', __( 'WDS Required Plugin', 'wds-required-plugins' ) ) );
+	}
+
 	/**
 	 * Remove the deactivation link for all custom/required plugins
 	 *
@@ -107,10 +118,10 @@ class WDS_Required_Plugins {
 		}
 
 		// Remove deactivate link for required plugins
-		if( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $this->get_required_plugins() ) ) {
+		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $this->get_required_plugins() ) ) {
 			// Filter if you don't want the required plugin to be network-required by default.
 			if ( ! self::$is_multisite || apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) ) {
-				$actions['deactivate'] = sprintf( '<span style="color: #888">%s</span>', __( 'WDS Required Plugin', 'wds-required-plugins' ) );
+				$actions['deactivate'] = $this->required_text;
 			}
 		}
 
