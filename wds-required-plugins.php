@@ -1,15 +1,15 @@
 <?php
-/*
-Plugin Name: WDS Required Plugins
-Plugin URI: http://webdevstudios.com
-Description: Make certain plugins required so that they cannot be (easily) deactivated.
-Author: WebDevStudios
-Author URI: http://webdevstudios.com
-Version: 0.1.2
-Domain: wds-required-plugins
-License: GPLv2
-Path: languages
-*/
+/**
+ * Plugin Name: WDS Required Plugins
+ * Plugin URI: http://webdevstudios.com
+ * Description: Forcefully require specific plugins to be activated.
+ * Author: WebDevStudios
+ * Author URI: http://webdevstudios.com
+ * Version: 0.1.3
+ * Domain: wds-required-plugins
+ * License: GPLv2
+ * Path: languages
+ */
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
