@@ -104,11 +104,6 @@ class WDS_Required_Plugins {
 	 * @return array
 	 */
 	public function filter_plugin_links( $actions = array(), $plugin ) {
-		// Remove edit link for all plugins
-		if ( array_key_exists( 'edit', $actions ) ) {
-			unset( $actions['edit'] );
-		}
-
 		// Remove deactivate link for required plugins
 		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $this->get_required_plugins() ) ) {
 			// Filter if you don't want the required plugin to be network-required by default.
