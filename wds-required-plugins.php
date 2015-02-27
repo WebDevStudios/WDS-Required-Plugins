@@ -1,15 +1,15 @@
 <?php
-/*
-Plugin Name: WDS Required Plugins
-Plugin URI: http://webdevstudios.com
-Description: Make certain plugins required so that they cannot be (easily) deactivated.
-Author: WebDevStudios
-Author URI: http://webdevstudios.com
-Version: 0.1.2
-Domain: wds-required-plugins
-License: GPLv2
-Path: languages
-*/
+/**
+ * Plugin Name: WDS Required Plugins
+ * Plugin URI: http://webdevstudios.com
+ * Description: Forcefully require specific plugins to be activated.
+ * Author: WebDevStudios
+ * Author URI: http://webdevstudios.com
+ * Version: 0.1.3
+ * Domain: wds-required-plugins
+ * License: GPLv2
+ * Path: languages
+ */
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -39,12 +39,6 @@ class WDS_Required_Plugins {
 	private static $l10n_done = false;
 
 	/**
-	 * Whether text-domain has been registered
-	 * @var boolean
-	 */
-	private static $is_multisite = false;
-
-	/**
 	 * Text/markup for required text
 	 * @var string
 	 */
@@ -69,14 +63,12 @@ class WDS_Required_Plugins {
 	 * @since 0.1.0
 	 */
 	private function __construct() {
-		self::$is_multisite = is_multisite();
-
 		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
 		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
+
 		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-		if ( self::$is_multisite ) {
-			add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-		}
+		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+
 		// load text domain
 		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
 	}
@@ -90,7 +82,15 @@ class WDS_Required_Plugins {
 		foreach ( $this->get_required_plugins() as $plugin ) {
 			if ( ! is_plugin_active( $plugin ) ) {
 				// Filter if you don't want the required plugin to network-activate by default.
-				activate_plugin( $plugin, null, apply_filters( 'wds_required_plugin_network_activate', self::$is_multisite, $plugin ) );
+				activate_plugin( $plugin, null, apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin ) );
+			}
+		}
+
+		if( is_network_admin() ) {
+			foreach ( $this->get_network_required_plugins() as $plugin ) {
+				if ( ! is_plugin_active_for_network( $plugin ) ) {
+					activate_plugin( $plugin, null, true );
+				}
 			}
 		}
 	}
@@ -112,13 +112,9 @@ class WDS_Required_Plugins {
 	 * @return array
 	 */
 	public function filter_plugin_links( $actions = array(), $plugin ) {
-		// Remove edit link for all plugins
-		if ( array_key_exists( 'edit', $actions ) ) {
-			unset( $actions['edit'] );
-		}
-
+		$required_plugins = array_merge( $this->get_required_plugins(), $this->get_network_required_plugins );
 		// Remove deactivate link for required plugins
-		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $this->get_required_plugins() ) ) {
+		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins ) ) {
 			// Filter if you don't want the required plugin to be network-required by default.
 			if ( ! self::$is_multisite || apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) ) {
 				$actions['deactivate'] = $this->required_text;
@@ -137,6 +133,17 @@ class WDS_Required_Plugins {
 	 */
 	public function get_required_plugins() {
 		return (array) apply_filters( 'wds_required_plugins', array() );
+	}
+
+	/**
+	 * Get the network plugins that are required for the project. Plugins will be registered by the wds_network_required_plugins filter
+	 *
+	 * @since  0.1.3
+	 *
+	 * @return array
+	 */
+	public function get_network_required_plugins() {
+		return (array) apply_filters( 'wds_network_required_plugins', array() );
 	}
 
 	/**
@@ -165,4 +172,5 @@ class WDS_Required_Plugins {
 	}
 
 }
+
 WDS_Required_Plugins::init();
