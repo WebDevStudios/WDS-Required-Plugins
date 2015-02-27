@@ -85,6 +85,14 @@ class WDS_Required_Plugins {
 				activate_plugin( $plugin, null, apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin ) );
 			}
 		}
+
+		if( is_network_admin() ) {
+			foreach ( $this->get_network_required_plugins() as $plugin ) {
+				if ( ! is_plugin_active_for_network( $plugin ) ) {
+					activate_plugin( $plugin, null, true );
+				}
+			}
+		}
 	}
 
 	public function required_text_markup() {
@@ -127,6 +135,17 @@ class WDS_Required_Plugins {
 	}
 
 	/**
+	 * Get the network plugins that are required for the project. Plugins will be registered by the wds_network_required_plugins filter
+	 *
+	 * @since  0.1.3
+	 *
+	 * @return array
+	 */
+	public function get_network_required_plugins() {
+		return (array) apply_filters( 'wds_network_required_plugins', array() );
+	}
+
+	/**
 	 * Load this library's text domain
 	 * @since  0.2.1
 	 */
@@ -152,4 +171,5 @@ class WDS_Required_Plugins {
 	}
 
 }
+
 WDS_Required_Plugins::init();
