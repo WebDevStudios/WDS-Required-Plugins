@@ -39,12 +39,6 @@ class WDS_Required_Plugins {
 	private static $l10n_done = false;
 
 	/**
-	 * Whether text-domain has been registered
-	 * @var boolean
-	 */
-	private static $is_multisite = false;
-
-	/**
 	 * Text/markup for required text
 	 * @var string
 	 */
@@ -69,14 +63,12 @@ class WDS_Required_Plugins {
 	 * @since 0.1.0
 	 */
 	private function __construct() {
-		self::$is_multisite = is_multisite();
-
 		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
 		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
+
 		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-		if ( self::$is_multisite ) {
-			add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-		}
+		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+
 		// load text domain
 		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
 	}
@@ -90,7 +82,7 @@ class WDS_Required_Plugins {
 		foreach ( $this->get_required_plugins() as $plugin ) {
 			if ( ! is_plugin_active( $plugin ) ) {
 				// Filter if you don't want the required plugin to network-activate by default.
-				activate_plugin( $plugin, null, apply_filters( 'wds_required_plugin_network_activate', self::$is_multisite, $plugin ) );
+				activate_plugin( $plugin, null, apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin ) );
 			}
 		}
 	}
