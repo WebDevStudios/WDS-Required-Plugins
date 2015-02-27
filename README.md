@@ -17,7 +17,7 @@ A library intended for mu-plugins and used in [wd_s](https://github.com/WebDevSt
  * @return array           Modified array of required plugins
  */
 function wds_required_plugins_add( $required ) {
-	
+
 	$required = array_merge( $required, array(
 		'jetpack/jetpack.php',
 		'sample-plugin/sample-plugin.php',
@@ -29,6 +29,10 @@ add_filter( 'wds_required_plugins', 'wds_required_plugins_add' );
 ```
 
 #### Changelog
+* 0.1.3
+	* Network activation filter
+* 0.1.2
+	* i10n
 * 0.1.1
 	* Automatically activate required plugins (if they are available).
 * 0.1.0
