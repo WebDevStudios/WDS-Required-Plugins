@@ -112,7 +112,7 @@ class WDS_Required_Plugins {
 	 * @return array
 	 */
 	public function filter_plugin_links( $actions = array(), $plugin ) {
-		$required_plugins = array_merge( $this->get_required_plugins(), $this->get_network_required_plugins );
+		$required_plugins = array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() );
 		// Remove deactivate link for required plugins
 		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins ) ) {
 			// Filter if you don't want the required plugin to be network-required by default.
