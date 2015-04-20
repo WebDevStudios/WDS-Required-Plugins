@@ -116,7 +116,7 @@ class WDS_Required_Plugins {
 		// Remove deactivate link for required plugins
 		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins ) ) {
 			// Filter if you don't want the required plugin to be network-required by default.
-			if ( ! self::$is_multisite || apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) ) {
+			if ( ! is_multisite() || apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) ) {
 				$actions['deactivate'] = $this->required_text;
 			}
 		}
