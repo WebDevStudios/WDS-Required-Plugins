@@ -86,7 +86,7 @@ class WDS_Required_Plugins {
 			}
 		}
 
-		if( is_network_admin() ) {
+		if ( is_multisite() && is_admin() && function_exists( 'is_plugin_active_for_network' ) ) {
 			foreach ( $this->get_network_required_plugins() as $plugin ) {
 				if ( ! is_plugin_active_for_network( $plugin ) ) {
 					activate_plugin( $plugin, null, true );
