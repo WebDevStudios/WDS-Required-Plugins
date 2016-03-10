@@ -35,6 +35,28 @@ add_filter( 'wds_required_plugins', 'wds_required_plugins_add' );
 // add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
 ```
 
+#### Modification:
+To change the label from 'WDS Required Plugin', use the following filter/code.
+
+```php
+
+/**
+ * Modify the required-plugin label
+ *
+ * @param  string  $label Label markup
+ *
+ * @return string         (modified) label markup
+ */
+function change_wds_required_plugins_text( $label ) {
+
+	$label_text = __( 'Required Plugin for ACME', 'acme-prefix' );
+	$label = sprintf( '<span style="color: #888">%s</span>', $label_text );
+
+	return $label;
+}
+add_filter( 'wds_required_plugins_text', 'change_wds_required_plugins_text' );
+```
+
 #### Changelog
 * 0.1.3
 	* Network activation filter
