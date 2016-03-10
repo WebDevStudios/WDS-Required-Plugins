@@ -6,9 +6,14 @@ A library intended for mu-plugins and used in [wd_s](https://github.com/WebDevSt
 * Plugins are automatically activated (if they are in the plugins directory)
 * More to come.
 
+To use, place this library in your mu-plugins/ directory (if you don't have one, create one in wp-content/), then use the example below:
+
 #### Example Usage:
 ```php
 <?php
+
+require WPMU_PLUGIN_DIR . '/WDS-Required-Plugins/wds-required-plugins.php';
+
 /**
  * Add required plugins to WDS_Required_Plugins
  *
@@ -26,6 +31,8 @@ function wds_required_plugins_add( $required ) {
 	return $required;
 }
 add_filter( 'wds_required_plugins', 'wds_required_plugins_add' );
+// Or network-activate/require them:
+// add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
 ```
 
 #### Changelog
