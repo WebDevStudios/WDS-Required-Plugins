@@ -5,7 +5,7 @@
  * Description: Forcefully require specific plugins to be activated.
  * Author: WebDevStudios
  * Author URI: http://webdevstudios.com
- * Version: 0.1.3
+ * Version: 0.1.4
  * Domain: wds-required-plugins
  * License: GPLv2
  * Path: languages
@@ -80,21 +80,70 @@ class WDS_Required_Plugins {
 	 */
 	public function activate_if_not() {
 		foreach ( $this->get_required_plugins() as $plugin ) {
-			if ( ! is_plugin_active( $plugin ) ) {
-				// Filter if you don't want the required plugin to network-activate by default.
-				activate_plugin( $plugin, null, apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin ) );
-			}
+			$this->maybe_activate_plugin( $plugin );
 		}
 
 		if ( is_multisite() && is_admin() && function_exists( 'is_plugin_active_for_network' ) ) {
 			foreach ( $this->get_network_required_plugins() as $plugin ) {
-				if ( ! is_plugin_active_for_network( $plugin ) ) {
-					activate_plugin( $plugin, null, true );
-				}
+				$this->maybe_activate_plugin( $plugin, true );
 			}
 		}
 	}
 
+	/**
+	 * Activates a required plugin if it's found, and auto-activation is enabled.
+	 *
+	 * @since  0.1.4
+	 *
+	 * @param  string  $plugin  The plugin to activate.
+	 * @param  boolean $network Whether we are activating a network-required plugin.
+	 *
+	 * @return WP_Error|null    WP_Error on invalid file or null on success.
+	 */
+	public function maybe_activate_plugin( $plugin, $network = false ) {
+		if (
+			is_plugin_active( $plugin )
+			|| ( $network && is_plugin_active_for_network( $plugin ) )
+		) {
+			return;
+		}
+
+		// Filter if you don't want the required plugin to auto-activate. `true` by default.
+		if ( ! apply_filters( 'wds_required_plugin_auto_activate', true, $plugin, $network ) ) {
+			return;
+		}
+
+		$network_wide = $network
+			? true
+			// Filter if you don't want the required plugin to network-activate by default.
+			: apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin, $network );
+
+		$result = activate_plugin( $plugin, null, $network_wide );
+
+		if (
+			// If auto-activation failed, and there is an error, log it.
+			is_wp_error( $result )
+			// Filter to disable the logging.
+			&& apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network )
+		) {
+
+			// Filter the logging message format/text.
+			$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text',
+				__( 'Required Plugin auto-activation failed for: "%s", with message: %s', 'wds-required-plugins' ), $plugin, $result, $network );
+
+			trigger_error( sprintf( $log_msg_format, $plugin, $result->get_error_message() ) );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * The required plugin label text.
+	 *
+	 * @since  0.1.0
+	 *
+	 * @return void
+	 */
 	public function required_text_markup() {
 		$this->required_text = apply_filters( 'wds_required_plugins_text', sprintf( '<span style="color: #888">%s</span>', __( 'WDS Required Plugin', 'wds-required-plugins' ) ) );
 	}
