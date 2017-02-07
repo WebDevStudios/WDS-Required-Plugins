@@ -271,21 +271,45 @@ class WDS_Required_Plugins {
 			return;
 		}
 
-		$loaded = load_plugin_textdomain( 'wds-required-plugins', false, '/languages/' );
-		if ( ! $loaded ) {
-			$loaded = load_muplugin_textdomain( 'wds-required-plugins', '/languages/' );
-		}
-		if ( ! $loaded ) {
-			$loaded = load_theme_textdomain( 'wds-required-plugins', '/languages/' );
+		// Bail on ajax requests.
+		if ( wp_doing_ajax() ) {
+			return;
 		}
 
-		if ( ! $loaded ) {
-			$locale = apply_filters( 'plugin_locale', get_locale(), 'wds-required-plugins' );
-			$mofile = dirname( __FILE__ ) . '/languages/wds-required-plugins-'. $locale .'.mo';
-			load_textdomain( 'wds-required-plugins', $mofile );
+		// Bail if we're not in the admin.
+		if ( ! is_admin() ) {
+			return;
 		}
+
+		// Don't do anything if the user isn't permitted, or its an ajax request.
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
+		// Try to load mu-plugin textdomain.
+		if ( load_muplugin_textdomain( 'wds-required-plugins', '/languages/' ) ) {
+			self::$l10n_done = true;
+			return;
+		}
+
+		// If we didn't load, load as a plugin.
+		if ( load_plugin_textdomain( 'wds-required-plugins', false, '/languages/' ) ) {
+			self::$l10n_done = true;
+			return;
+		}
+
+		// If we didn't load yet, load as a theme.
+		if ( load_theme_textdomain( 'wds-required-plugins', '/languages/' ) ) {
+			self::$l10n_done = true;
+			return;
+		}
+
+		// If we still didn't load, assume our text domain is right where we are.
+		$locale = apply_filters( 'plugin_locale', get_locale(), 'wds-required-plugins' );
+		$mofile = dirname( __FILE__ ) . '/languages/wds-required-plugins-' . $locale . '.mo';
+		load_textdomain( 'wds-required-plugins', $mofile );
+		self::$l10n_done = true;
 	}
-
 }
 
 WDS_Required_Plugins::init();
