@@ -9,9 +9,11 @@
  * Domain: wds-required-plugins
  * License: GPLv2
  * Path: languages
+ *
+ * @package WDS_Required_Plugins
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -33,19 +35,22 @@ class WDS_Required_Plugins {
 	public static $instance = null;
 
 	/**
-	 * Whether text-domain has been registered
+	 * Whether text-domain has been registered.
+	 *
 	 * @var boolean
 	 */
 	private static $l10n_done = false;
 
 	/**
-	 * Text/markup for required text
+	 * Text/markup for required text.
+	 *
 	 * @var string
 	 */
 	private $required_text = '';
 
 	/**
 	 * Creates or returns an instance of this class.
+	 *
 	 * @since  0.1.0
 	 * @return WDS_Required_Plugins A single instance of this class.
 	 */
@@ -63,13 +68,16 @@ class WDS_Required_Plugins {
 	 * @since 0.1.0
 	 */
 	private function __construct() {
+
+		// Attempt activation + load text domain in the admin.
 		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
 		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
 
+		// Filter plugin links to remove deactivate option.
 		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
 		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
 
-		// load text domain
+		// Load text domain.
 		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
 	}
 
@@ -142,7 +150,7 @@ class WDS_Required_Plugins {
 	 *
 	 * @since  0.1.0
 	 *
-	 * @return void
+	 * @return  void
 	 */
 	public function required_text_markup() {
 		$this->required_text = apply_filters( 'wds_required_plugins_text', sprintf( '<span style="color: #888">%s</span>', __( 'WDS Required Plugin', 'wds-required-plugins' ) ) );
@@ -153,14 +161,14 @@ class WDS_Required_Plugins {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param $actions
-	 * @param $plugin
-	 * @param $plugin_data
-	 * @param $context
+	 * @param array  $actions  Array of actions avaible.
+	 * @param string $plugin   Slug of plugin.
 	 *
 	 * @return array
 	 */
 	public function filter_plugin_links( $actions = array(), $plugin ) {
+
+		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 		// Remove deactivate link for required plugins
 		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins ) ) {
@@ -197,10 +205,14 @@ class WDS_Required_Plugins {
 
 	/**
 	 * Load this library's text domain
-	 * @since  0.2.1
+	 *
+	 * @since  0.1.1
+	 *
+	 * @return  void
 	 */
 	public function l10n() {
-		// Only do this one time
+
+		// Only do this one time.
 		if ( self::$l10n_done ) {
 			return;
 		}
