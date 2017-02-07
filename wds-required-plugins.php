@@ -203,8 +203,10 @@ class WDS_Required_Plugins {
 
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
-		// Remove deactivate link for required plugins
-		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins ) ) {
+
+		// Remove deactivate link for required plugins.
+		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins, true ) ) {
+
 			// Filter if you don't want the required plugin to be network-required by default.
 			if ( ! is_multisite() || apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) ) {
 				$actions['deactivate'] = $this->required_text;
