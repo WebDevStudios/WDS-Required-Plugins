@@ -87,11 +87,31 @@ class WDS_Required_Plugins {
 	 * @since 0.1.1
 	 */
 	public function activate_if_not() {
+
+		// Bail on ajax requests.
+		if ( wp_doing_ajax() ) {
+			return;
+		}
+
+		// Bail if we're not in the admin.
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		// Don't do anything if the user isn't permitted, or its an ajax request.
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
+		// Loop through each plugin we have set as required.
 		foreach ( $this->get_required_plugins() as $plugin ) {
 			$this->maybe_activate_plugin( $plugin );
 		}
 
-		if ( is_multisite() && is_admin() && function_exists( 'is_plugin_active_for_network' ) ) {
+		// If we're multisite, attempt to network activate our plugins.
+		if ( is_multisite() && function_exists( 'is_plugin_active_for_network' ) ) {
+
+			// Loop through each network required plugin.
 			foreach ( $this->get_network_required_plugins() as $plugin ) {
 				$this->maybe_activate_plugin( $plugin, true );
 			}
@@ -109,10 +129,14 @@ class WDS_Required_Plugins {
 	 * @return WP_Error|null    WP_Error on invalid file or null on success.
 	 */
 	public function maybe_activate_plugin( $plugin, $network = false ) {
-		if (
-			is_plugin_active( $plugin )
-			|| ( $network && is_plugin_active_for_network( $plugin ) )
-		) {
+
+		// Don't activate if already active.
+		if ( is_plugin_active( $plugin ) ) {
+			return;
+		}
+
+		// Don't activate if already network-active.
+		if ( $network && is_plugin_active_for_network( $plugin ) ) {
 			return;
 		}
 
