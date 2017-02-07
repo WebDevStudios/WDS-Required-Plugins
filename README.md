@@ -57,7 +57,17 @@ function change_wds_required_plugins_text( $label ) {
 add_filter( 'wds_required_plugins_text', 'change_wds_required_plugins_text' );
 ```
 
+#### Hide from the Plugin list
+To hide your required plugins from the plugins list, use the following filter/code.
+
+```php
+add_filter( 'wds_required_plugins_remove_from_list', '__return_true' );
+```
+
 #### Changelog
+* 0.1.5
+	* Add ability to remove plugins from the plugin list, if desired.
+	* Comments / docblocks clean up.
 * 0.1.4
 	* Will now log if/when a required plugin is not found.
 	* New filters:

@@ -77,6 +77,9 @@ class WDS_Required_Plugins {
 		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
 		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
 
+		// Remove plugins from the plugins.
+		add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
+
 		// Load text domain.
 		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
 	}
@@ -203,6 +206,33 @@ class WDS_Required_Plugins {
 		}
 
 		return $actions;
+	}
+
+	/**
+	 * Remove required plugins from the plugins list, if enabled.
+	 *
+	 * @since   0.1.5
+	 *
+	 * @param   array $plugins Array of plugins.
+	 *
+	 * @return  array          Array of plugins.
+	 */
+	public function maybe_remove_plugins_from_list( $plugins ) {
+
+		// Allow for removing all plugins from the plugins list.
+		if ( ! apply_filters( 'wds_required_plugin_remove_from_list', false ) ) {
+			return $plugins;
+		}
+
+		// Loop through each of our required plugins.
+		foreach ( $this->get_required_plugins() as $required_plugin ) {
+
+			// Remove from the all plugins list.
+			unset( $plugins[ $required_plugin ] );
+		}
+
+		// Send it back.
+		return $plugins;
 	}
 
 	/**
