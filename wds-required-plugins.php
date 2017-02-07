@@ -148,25 +148,31 @@ class WDS_Required_Plugins {
 			return;
 		}
 
-		$network_wide = $network
-			? true
-			// Filter if you don't want the required plugin to network-activate by default.
-			: apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin, $network );
+		// Filter if you don't want the required plugin to network-activate by default.
+		$network_wide = $network ? true : apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin, $network );
 
+		// Activate the plugin.
 		$result = activate_plugin( $plugin, null, $network_wide );
 
-		if (
-			// If auto-activation failed, and there is an error, log it.
-			is_wp_error( $result )
-			// Filter to disable the logging.
-			&& apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network )
-		) {
+		// If we activated correctly, than return results of that.
+		if ( ! is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		// If auto-activation failed, and there is an error, log it.
+		if ( apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network ) ) {
+
+			// Set default log text.
+			$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
 
 			// Filter the logging message format/text.
-			$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text',
-				__( 'Required Plugin auto-activation failed for: "%s", with message: %s', 'wds-required-plugins' ), $plugin, $result, $network );
+			$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text', $default_log_text, $plugin, $result, $network );
 
-			trigger_error( sprintf( $log_msg_format, $plugin, $result->get_error_message() ) );
+			// Get our error message.
+			$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
+
+			// Trigger our error, with all our log messages.
+			trigger_error( sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) ) );
 		}
 
 		return $result;
