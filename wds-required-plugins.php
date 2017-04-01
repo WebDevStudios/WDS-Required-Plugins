@@ -151,6 +151,11 @@ class WDS_Required_Plugins {
 		// Filter if you don't want the required plugin to network-activate by default.
 		$network_wide = $network ? true : apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin, $network );
 
+		// Make sure our plugin exists before activating it
+		if ( ! file_exists( $plugin ) ) {
+			return $this->log_error( $plugin, __( 'File does not exist.', 'wds-required-plugins' ), $network_wide );
+		}
+
 		// Activate the plugin.
 		$result = activate_plugin( $plugin, null, $network_wide );
 
@@ -159,23 +164,52 @@ class WDS_Required_Plugins {
 			return $result;
 		}
 
-		// If auto-activation failed, and there is an error, log it.
-		if ( apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network ) ) {
+		// Log our error if we need to.
+		return $this->log_error( $plugin, $result, $network_wide );
+	}
 
-			// Set default log text.
-			$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
-
-			// Filter the logging message format/text.
-			$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text', $default_log_text, $plugin, $result, $network );
-
-			// Get our error message.
-			$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
-
-			// Trigger our error, with all our log messages.
-			trigger_error( sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) ) );
+	/**
+	 * Log errors for activation.
+	 *
+	 * @param string          $plugin  Folder and file of plugin.
+	 * @param string|WP_Error $result  String of error text or WP_Error of error.
+	 * @param boolean         $network Whether or not network wide is enabled.
+	 *
+	 * @return string|WP_Error Returns $result that was passed in.
+	 */
+	public function log_error( $plugin, $result, $network ) {
+		// Only do this if we have WP_DEBUG enabled.
+		if ( ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+			return $result;
 		}
 
-		return $result;
+		// If auto-activation failed, and there is an error, log it.
+		if ( ! apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network ) ) {
+			return $result;
+		}
+
+		// Set default log text.
+		$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
+
+		// Filter the logging message format/text.
+		$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text', $default_log_text, $plugin, $result, $network );
+
+		// Get our error message.
+		if ( is_a( $result, 'WP_Error' ) ) {
+			$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
+		} else {
+			$error_message = strval( $result );
+		}
+
+		// Build our full error message format.
+		$full_error = sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) );
+
+		// Trigger our error, with all our log messages.
+		if ( apply_filters( 'wds_required_plugins_use_error_log', true ) ) {
+			error_log( $full_error );
+		} else {
+			trigger_error( $full_error );
+		}
 	}
 
 	/**
