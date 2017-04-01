@@ -251,7 +251,20 @@ class WDS_Required_Plugins {
 	 * @return array
 	 */
 	public function get_required_plugins() {
-		return (array) apply_filters( 'wds_required_plugins', array() );
+		// Get our array of required plugins.
+		$required = (array) apply_filters( 'wds_required_plugins', array() );
+
+		// Get the path & filename of ourself.
+		$self = plugin_basename( __FILE__ );
+
+		// If this is filtered to false, we bail early. Default to active state of
+		// the plugin, which means that if we are installed as a plugin, we'll be
+		// including ourselves in the array of required plugins unless filtered.
+		if ( ! apply_filters( 'wds_required_plugins_include_self', is_plugin_active( $self )  ) ) {
+			return $required;
+		}
+
+		return array_unique( array_merge( $required, array( $self ) ) );
 	}
 
 	/**
