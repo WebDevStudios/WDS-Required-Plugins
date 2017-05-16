@@ -283,7 +283,7 @@ final class WDS_Required_Plugins {
 		}
 
 		// Make sure our plugin exists before activating it
-		if ( ! file_exists( $plugin ) ) {
+		if ( ! file_exists( trailingslashit( WP_PLUGIN_DIR ) . $plugin ) ) {
 			return $this->log_error( $plugin, __( 'File does not exist.', 'wds-required-plugins' ), $network_wide );
 		}
 
@@ -430,32 +430,12 @@ final class WDS_Required_Plugins {
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 
-		// Replace these action keys with what we have set for required text.
-		$action_keys = [
-			'deactivate',
-			'network_active',
-		];
+		// Remove deactivate link for required plugins.
+		if ( in_array( $plugin, $required_plugins, true ) ) {
 
-		foreach ( $action_keys as $key ) {
-
-			// Remove deactivate link for required plugins.
-			if ( array_key_exists( $key, $actions ) && in_array( $plugin, $required_plugins, true ) ) {
-
-				/**
-				 * Should we remove the deactivated text for this plugin?
-				 *
-				 * @author  Brad Parbs
-				 * @since   Unknown
-				 *
-				 * @param bool   $remove Should we remove it? Default to true.
-				 * @param string $plugin What plugin we're talking about.
-				 */
-				$wds_required_plugin_network_activate = apply_filters( 'wds_required_plugin_network_activate', true, $plugin );
-
-				// Filter if you don't want the required plugin to be network-required by default.
-				if ( $wds_required_plugin_network_activate ) {
-					$actions[ $key ] = $this->required_text;
-				}
+			// Filter if you don't want the required plugin to be network-required by default.
+			if ( ! is_multisite() || apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) ) {
+				$actions['deactivate'] = $this->required_text;
 			}
 		}
 
