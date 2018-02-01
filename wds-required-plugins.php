@@ -1,17 +1,17 @@
 <?php // @codingStandardsIgnoreLine: Filename okay here.
 /**
  * Plugin Name: WDS Required Plugins
- * Plugin URI: http://webdevstudios.com
+ * Plugin URI:  http://webdevstudios.com
  * Description: Forcefully require specific plugins to be activated.
- * Author: WebDevStudios
- * Author URI: http://webdevstudios.com
- * Version: 0.1.5
- * Domain: wds-required-plugins
- * License: GPLv2
- * Path: languages
+ * Author:      WebDevStudios
+ * Author URI:  http://webdevstudios.com
+ * Version:     1.0.0
+ * Domain:      wds-required-plugins
+ * License:     GPLv2
+ * Path:        languages
  *
- * @package WDS_Required_Plugins
- * @since   0.1.4
+ * @package     WDS_Required_Plugins
+ * @since       0.1.4
  */
 
 // Exit if accessed directly.
