@@ -1,4 +1,4 @@
-<?php
+<?php // @codingStandardsIgnoreLine: Filename okay here.
 /**
  * Plugin Name: WDS Required Plugins
  * Plugin URI: http://webdevstudios.com
