@@ -11,6 +11,7 @@
  * Path: languages
  *
  * @package WDS_Required_Plugins
+ * @since   0.1.4
  */
 
 // Exit if accessed directly.
