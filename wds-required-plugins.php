@@ -25,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package WordPress
  *
  * @subpackage Project
+ * @since      Unknown
  */
 class WDS_Required_Plugins {
 
@@ -32,6 +33,7 @@ class WDS_Required_Plugins {
 	 * Instance of this class.
 	 *
 	 * @var WDS_Required_Plugins object
+	 * @since Unknown
 	 */
 	public static $instance = null;
 
@@ -39,6 +41,7 @@ class WDS_Required_Plugins {
 	 * Whether text-domain has been registered.
 	 *
 	 * @var boolean
+	 * @since  Unknown
 	 */
 	private static $l10n_done = false;
 
@@ -46,6 +49,7 @@ class WDS_Required_Plugins {
 	 * Text/markup for required text.
 	 *
 	 * @var string
+	 * @since  Unknown
 	 */
 	private $required_text = '';
 
@@ -89,6 +93,7 @@ class WDS_Required_Plugins {
 	 * Activate required plugins if they are not.
 	 *
 	 * @since 0.1.1
+	 * @return void Early bails when we don't need to activate it.
 	 */
 	public function activate_if_not() {
 
@@ -163,7 +168,7 @@ class WDS_Required_Plugins {
 		// If auto-activation failed, and there is an error, log it.
 		if ( apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network ) ) {
 
-			// Set default log text.
+			// translators: %1 and %2 are explained below. Set default log text.
 			$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
 
 			// Filter the logging message format/text.
@@ -172,7 +177,7 @@ class WDS_Required_Plugins {
 			// Get our error message.
 			$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
 
-			// Trigger our error, with all our log messages.
+			// Trigger our error, with all our log messages. @codingStandardsIgnoreLine: trigger_error okay here.
 			trigger_error( sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) ) );
 		}
 
@@ -183,8 +188,6 @@ class WDS_Required_Plugins {
 	 * The required plugin label text.
 	 *
 	 * @since  0.1.0
-	 *
-	 * @return  void
 	 */
 	public function required_text_markup() {
 		$this->required_text = apply_filters( 'wds_required_plugins_text', sprintf( '<span style="color: #888">%s</span>', __( 'WDS Required Plugin', 'wds-required-plugins' ) ) );
@@ -223,7 +226,6 @@ class WDS_Required_Plugins {
 	 * @since   0.1.5
 	 *
 	 * @param   array $plugins Array of plugins.
-	 *
 	 * @return  array          Array of plugins.
 	 */
 	public function maybe_remove_plugins_from_list( $plugins ) {
@@ -321,4 +323,5 @@ class WDS_Required_Plugins {
 	}
 }
 
+// Init.
 WDS_Required_Plugins::init();
