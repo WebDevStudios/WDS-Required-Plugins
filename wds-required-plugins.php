@@ -202,6 +202,13 @@ class WDS_Required_Plugins {
 			return;
 		}
 
+		// If we're installing multisite, then disable our plugins and bail out.
+		if ( defined( 'WP_INSTALLING_NETWORK' ) && WP_INSTALLING_NETWORK ) {
+			add_filter( 'pre_option_active_plugins', '__return_empty_array' );
+			add_filter( 'pre_site_option_active_sitewide_plugins', '__return_empty_array' );
+			return;
+		}
+
 		// Loop through each plugin we have set as required.
 		foreach ( $this->get_required_plugins() as $plugin ) {
 			$this->maybe_activate_plugin( $plugin );
