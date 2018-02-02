@@ -7,10 +7,24 @@ A library you can use to make any plugins required and auto-activate.
 
 To use, place this library in your `mu-plugins/` directory (if you don't have one, create one in `wp-content/`), then use the example below:
 
-## Installation
+## Installation & Update
 
-The easiest way to install is to download `wds-required-plugins` to your `wp-content/mu-plugins` which
-will automatically load the library.
+You can easily run the below command from the `wp-content/mu-plugins` directory:
+
+```sh
+curl --remote-name https://raw.githubusercontent.com/WebDevStudios/WDS-Required-Plugins/master/wds-required-plugins.php
+```
+
+This will download and install the plugin automatically (and will update your file).
+
+### Clone the Repo
+
+You can also clone the repo into your `wp-content/mu-plugins` directory, but you will have
+to load the library via before any of the examples below.
+
+```php
+require_once WPMU_PLUGIN_DIR . '/WDS-Required-Plugins/wds-required-plugins.php';
+```
 
 ## Example Usage
 
