@@ -340,18 +340,28 @@ class WDS_Required_Plugins {
 	 */
 	public function required_text_markup() {
 		$texts = array(
-			__( 'Required Network Plugin', 'wds-required-plugins' ) => array(
+
+			// Multisite.
+			array(
+
+				// The value we'll set it to.
+				'text'     => __( 'Required Plugin', 'wds-required-plugins' ),
+
+				// The filter they can use to change it.
 				'filter'   => 'wds_required_plugins_text_multisite',
+
+				// Where we'll assign the value for later.
 				'property' => 'required_network_text',
 			),
-			__( 'Required Plugin', 'wds-required-plugins' )  => array(
+			array(
+				'text'     => __( 'Required Plugin', 'wds-required-plugins' ),
 				'filter'   => 'wds_required_plugins_text',
 				'property' => 'required_text',
 			),
 		);
 
-		foreach ( $texts as $text => $args ) {
-			$default = sprintf( $this->required_text_code, $text );
+		foreach ( $texts as  $args ) {
+			$default = sprintf( $this->required_text_code, $args['text'] );
 
 			/**
 			 * Set the value for what shows when a plugin is required.
