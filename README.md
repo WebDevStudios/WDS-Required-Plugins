@@ -1,25 +1,26 @@
-WDS Required Plugins
-=========
+# WDS Required Plugins
 
-A library intended for mu-plugins and used in [wd_s](https://github.com/WebDevStudios/wd_s) that allows a theme or plugin to filter the list of required plugins so that:
-* The deactivate links are removed.
-* Plugins are automatically activated (if they are in the plugins directory)
-* More to come.
+A library you can use to make any plugins required and auto-activate.
 
-To use, place this library in your mu-plugins/ directory (if you don't have one, create one in wp-content/), then use the example below:
+* Nobody can de-activate the plugin from the WordPress Admin
+* They are auto-activated when required
 
-#### Example Usage:
+To use, place this library in your `mu-plugins/` directory (if you don't have one, create one in `wp-content/`), then use the example below:
+
+## Example Usage:
+
 ```php
 <?php
 
+// Load our library if you put it in mu-plugins.
 require WPMU_PLUGIN_DIR . '/WDS-Required-Plugins/wds-required-plugins.php';
 
 /**
- * Add required plugins to WDS_Required_Plugins
+ * Add required plugins to WDS_Required_Plugins.
  *
- * @param  array $required Array of required plugins in `plugin_dir/plugin_file.php` form
+ * @param  array $required Array of required plugins in `plugin_dir/plugin_file.php` form.
  *
- * @return array           Modified array of required plugins
+ * @return array           Modified array of required plugins.
  */
 function wds_required_plugins_add( $required ) {
 
@@ -31,21 +32,26 @@ function wds_required_plugins_add( $required ) {
 	return $required;
 }
 add_filter( 'wds_required_plugins', 'wds_required_plugins_add' );
-// Or network-activate/require them:
-// add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
 ```
 
-#### Modification:
-To change the label from 'WDS Required Plugin', use the following filter/code.
+Use the following filter **instead** to network activate plugins:
+
+```php
+add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
+```
+
+### Change the Text:
+
+To change the label from **Required Plugin** to something else, use the following filter/code:
 
 ```php
 
 /**
- * Modify the required-plugin label
+ * Modify the required-plugin label.
  *
- * @param  string  $label Label markup
+ * @param  string  $label Label markup.
  *
- * @return string         (modified) label markup
+ * @return string         (modified) label markup.
  */
 function change_wds_required_plugins_text( $label ) {
 
@@ -57,9 +63,12 @@ function change_wds_required_plugins_text( $label ) {
 add_filter( 'wds_required_plugins_text', 'change_wds_required_plugins_text' );
 ```
 
-#### Hide from the Plugin list
-To hide your required plugins from the plugins list, use the following filter/code.
+### Hide Required Plugins (off by default)
+
+To hide your required plugins from the plugins list, use the following filter/code:
 
 ```php
 add_filter( 'wds_required_plugins_remove_from_list', '__return_true' );
 ```
+
+This will make any plugin that is required simply not show in the plugins list.
