@@ -74,19 +74,70 @@ class WDS_Required_Plugins {
 	 */
 	private function __construct() {
 
-		// Attempt activation + load text domain in the admin.
-		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
-		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
+		// Only if we are not incompatible with something.
+		if ( ! $this->incompatible() ) {
 
-		// Filter plugin links to remove deactivate option.
-		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+			// Attempt activation + load text domain in the admin.
+			add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
+			add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
 
-		// Remove plugins from the plugins.
-		add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
+			// Filter plugin links to remove deactivate option.
+			add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+			add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
 
-		// Load text domain.
-		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
+			// Remove plugins from the plugins.
+			add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
+
+			// Load text domain.
+			add_action( 'plugins_loaded', array( $this, 'l10n' ) );
+		}
+	}
+
+	/**
+	 * Are we currently incompatible with something?
+	 *
+	 * @author Aubrey Portwood
+	 * @since  1.0.0
+	 *
+	 * @return boolean True if we are incompatible with something, false if not.
+	 */
+	public function incompatible() {
+
+		/**
+		 * Add or filter your incompatibility tests here.
+		 *
+		 * Note, the entire array needs to be false for
+		 * there to not be any incompatibilities.
+		 *
+		 * @author Aubrey Portwood
+		 *
+		 * @since 1.0.0
+		 * @param array $incom A list of tests that determine incompatibilities.
+		 */
+		$incompatibilities = apply_filters( 'wds_required_plugins_incompatibilities', array(
+
+			/*
+			 * WP Migrate DB Pro is performing an AJAX migration.
+			 */
+			(boolean) wp_doing_ajax() && $this->is_wpmdb(),
+		) );
+
+		// If the array has any incompatibility, we are incompatible.
+		return in_array( true, $incompatibilities, true );
+	}
+
+	/**
+	 * Is WP Migrate DB Pro doing something?
+	 *
+	 * @author Aubrey Portwood
+	 * @since  1.0.0
+	 *
+	 * @return boolean True if we find wpmdb set as the action.
+	 */
+	public function is_wpmdb() {
+
+		// @codingStandardsIgnoreLine: Nonce validation not necessary here.
+		return strpos( isset( $_POST['action'] ) ? filter_var( $_POST['action'], FILTER_SANITIZE_STRING ) : '', 'wpmdb' );
 	}
 
 	/**
