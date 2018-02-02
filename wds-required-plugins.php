@@ -161,6 +161,8 @@ class WDS_Required_Plugins {
 			$this->incompatibilities = $filter;
 		}
 
+		error_log( print_r( array( $filter ), true ) );
+
 		// If the array has any incompatibility, we are incompatible.
 		return in_array( true, $this->incompatibilities, true );
 	}
@@ -176,7 +178,7 @@ class WDS_Required_Plugins {
 	public function is_wpmdb() {
 
 		// @codingStandardsIgnoreLine: Nonce validation not necessary here.
-		return stristr( isset( $_POST['action'] ) && is_string( $_POST['action'] ) ? $_POST['action'] : '', 'wpmdb_' );
+		return wp_doing_ajax() && stristr( isset( $_POST['action'] ) && is_string( $_POST['action'] ) ? $_POST['action'] : '', 'wpmdb_' );
 	}
 
 	/**
