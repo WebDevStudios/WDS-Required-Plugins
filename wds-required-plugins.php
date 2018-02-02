@@ -323,7 +323,37 @@ class WDS_Required_Plugins {
 	 * @return array
 	 */
 	public function get_required_plugins() {
-		return (array) apply_filters( 'wds_required_plugins', array() );
+
+		/**
+		 * Set single site required plugins.
+		 *
+		 * Example:
+		 *
+		 *     function wds_required_plugins_add( $required ) {
+		 *         $required = array_merge( $required, array(
+		 *             'akismet/akismet.php',
+		 *             'wordpress-importer/wordpress-importer.php',
+		 *         ) );
+		 *
+		 *         return $required;
+		 *     }
+		 *     add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
+		 *
+		 * @author Brad Parbs
+		 * @author Aubrey Portwood
+		 *
+		 * @since  Unknown
+		 *
+		 * @var array
+		 */
+		$required_plugins = apply_filters( 'wds_required_plugins', array() );
+		if ( ! is_array( $required_plugins ) ) {
+
+			// The person who filtered this broke it.
+			return array();
+		}
+
+		return $required_plugins;
 	}
 
 	/**
@@ -334,7 +364,37 @@ class WDS_Required_Plugins {
 	 * @return array
 	 */
 	public function get_network_required_plugins() {
-		return (array) apply_filters( 'wds_network_required_plugins', array() );
+
+		/**
+		 * Set multisite site required plugins.
+		 *
+		 * Example:
+		 *
+		 *     function wds_required_plugins_add( $required ) {
+		 *         $required = array_merge( $required, array(
+		 *             'akismet/akismet.php',
+		 *             'wordpress-importer/wordpress-importer.php',
+		 *         ) );
+		 *
+		 *         return $required;
+		 *     }
+		 *     add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
+		 *
+		 * @author Brad Parbs
+		 * @author Aubrey Portwood
+		 *
+		 * @since  Unknown
+		 *
+		 * @var array
+		 */
+		$required_plugins = apply_filters( 'wds_network_required_plugins', array() );
+		if ( ! is_array( $required_plugins ) ) {
+
+			// The person who filtered this broke it.
+			return array();
+		}
+
+		return $required_plugins;
 	}
 
 	/**
