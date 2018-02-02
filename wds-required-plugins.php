@@ -54,6 +54,16 @@ class WDS_Required_Plugins {
 	private $required_text = '';
 
 	/**
+	 * Logged incompatibilities.
+	 *
+	 * @author Aubrey Portwood
+	 * @since  1.0.0
+	 *
+	 * @var array
+	 */
+	public $incompatibilities = array();
+
+	/**
 	 * Creates or returns an instance of this class.
 	 *
 	 * @since  0.1.0
@@ -114,16 +124,16 @@ class WDS_Required_Plugins {
 		 * @since 1.0.0
 		 * @param array $incom A list of tests that determine incompatibilities.
 		 */
-		$incompatibilities = apply_filters( 'wds_required_plugins_incompatibilities', array(
+		$this->incompatibilities = apply_filters( 'wds_required_plugins_incompatibilities', array(
 
 			/*
 			 * WP Migrate DB Pro is performing an AJAX migration.
 			 */
-			(boolean) wp_doing_ajax() && $this->is_wpmdb(),
+			(boolean) $this->is_wpmdb(),
 		) );
 
 		// If the array has any incompatibility, we are incompatible.
-		return in_array( true, $incompatibilities, true );
+		return in_array( true, $this->incompatibilities, true );
 	}
 
 	/**
@@ -137,7 +147,7 @@ class WDS_Required_Plugins {
 	public function is_wpmdb() {
 
 		// @codingStandardsIgnoreLine: Nonce validation not necessary here.
-		return strpos( isset( $_POST['action'] ) ? filter_var( $_POST['action'], FILTER_SANITIZE_STRING ) : '', 'wpmdb' );
+		return stristr( isset( $_POST['action'] ) && is_string( $_POST['action'] ) ? $_POST['action'] : '', 'wpmdb_' );
 	}
 
 	/**
