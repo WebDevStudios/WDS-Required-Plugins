@@ -63,22 +63,3 @@ To hide your required plugins from the plugins list, use the following filter/co
 ```php
 add_filter( 'wds_required_plugins_remove_from_list', '__return_true' );
 ```
-
-#### Changelog
-* 0.1.5
-	* Add ability to remove plugins from the plugin list, if desired.
-	* Comments / docblocks clean up.
-* 0.1.4
-	* Will now log if/when a required plugin is not found.
-	* New filters:
-		* `'wds_required_plugin_auto_activate'` - By default required plugins are auto-activated. This filter can disable that.
-		* `'wds_required_plugin_log_if_not_found'` - By default, missing required plugins will trigger an error in your log. This filter can disable that.
-		* `'wds_required_plugins_error_log_text'` - Filters the text format for the log entry.
-* 0.1.3
-	* Network activation filter
-* 0.1.2
-	* i10n
-* 0.1.1
-	* Automatically activate required plugins (if they are available).
-* 0.1.0
-	* Hello World.
