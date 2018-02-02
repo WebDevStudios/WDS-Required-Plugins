@@ -161,8 +161,6 @@ class WDS_Required_Plugins {
 			$this->incompatibilities = $filter;
 		}
 
-		error_log( print_r( array( $filter ), true ) );
-
 		// If the array has any incompatibility, we are incompatible.
 		return in_array( true, $this->incompatibilities, true );
 	}
