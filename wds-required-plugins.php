@@ -32,8 +32,10 @@ class WDS_Required_Plugins {
 	/**
 	 * Instance of this class.
 	 *
-	 * @var WDS_Required_Plugins object
+	 * @author Justin Sternberg
 	 * @since Unknown
+	 *
+	 * @var WDS_Required_Plugins object
 	 */
 	public static $instance = null;
 
@@ -41,6 +43,8 @@ class WDS_Required_Plugins {
 	 * Whether text-domain has been registered.
 	 *
 	 * @var boolean
+	 *
+	 * @author Justin Sternberg
 	 * @since  Unknown
 	 */
 	private static $l10n_done = false;
@@ -48,10 +52,38 @@ class WDS_Required_Plugins {
 	/**
 	 * Text/markup for required text.
 	 *
+	 * @see  self::required_text_markup() This will set the default value, but we
+	 *                                    can't here because we want to translate it.
+	 *
 	 * @var string
+	 *
+	 * @author Justin Sternberg
 	 * @since  Unknown
 	 */
 	private $required_text = '';
+
+	/**
+	 * Text/markup for required text for network active plugins.
+	 *
+	 * @see  self::required_text_markup() This will set the default value, but we
+	 *                                    can't here because we want to translate it.
+	 *
+	 * @var string
+	 *
+	 * @author Aubrey Portwood
+	 * @since  1.0.0
+	 */
+	private $required_network_text = '';
+
+	/**
+	 * Required Text Code.
+	 *
+	 * @author Aubrey Portwood
+	 * @since  1.0.0
+	 *
+	 * @var string
+	 */
+	private $required_text_code = '<span style="color: #888">%s</span>';
 
 	/**
 	 * Logged incompatibilities.
@@ -67,6 +99,8 @@ class WDS_Required_Plugins {
 	 * Creates or returns an instance of this class.
 	 *
 	 * @since  0.1.0
+	 * @author Justin Sternberg
+	 *
 	 * @return WDS_Required_Plugins A single instance of this class.
 	 */
 	public static function init() {
@@ -218,13 +252,40 @@ class WDS_Required_Plugins {
 			return;
 		}
 
-		// Filter if you don't want the required plugin to auto-activate. `true` by default.
-		if ( ! apply_filters( 'wds_required_plugin_auto_activate', true, $plugin, $network ) ) {
+		/**
+		 * Filter if you don't want the required plugin to auto-activate. `true` by default.
+		 *
+		 * If the plugin you are making required is not active, this will
+		 * not force it to be activated.
+		 *
+		 * @author  Justin Sternberg
+		 * @since   Unknown
+		 *
+		 * @param boolean $auto_activate Should we auto-activate the plugin, true by default.
+		 * @param string  $plugin        The plugin being activated.
+		 * @param string  $network       On what network?
+		 */
+		$auto_activate = apply_filters( 'wds_required_plugin_auto_activate', true, $plugin, $network );
+		if ( ! $auto_activate ) {
+
+			// Don't auto-activate.
 			return;
 		}
 
+		/**
+		 * Is this plugin supposed to be activated network wide?
+		 *
+		 * @author  Justin Sternberg
+		 * @since   Unknown
+		 *
+		 * @param boolean $is_multisite The value of is_multisite().
+		 * @param string  $plugin       The plugin being activated.
+		 * @param string  $network      The network.
+		 */
+		$is_multisite = apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin, $network );
+
 		// Filter if you don't want the required plugin to network-activate by default.
-		$network_wide = $network ? true : apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin, $network );
+		$network_wide = $network ? true : $is_multisite;
 
 		// Activate the plugin.
 		$result = activate_plugin( $plugin, null, $network_wide );
@@ -243,7 +304,7 @@ class WDS_Required_Plugins {
 		 *
 		 * Or, you could do it on a case-by-case basis with the $plugin being sent.
 		 *
-		 * @author  Brad Parbs
+		 * @author  Justin Sternberg
 		 * @since   Unknown
 		 *
 		 * @param boolean $log_not_found Whether the plugin is indeed found or not,
@@ -278,26 +339,55 @@ class WDS_Required_Plugins {
 	 * @since  0.1.0
 	 */
 	public function required_text_markup() {
-		$default = sprintf( '<span style="color: #888">%s</span>', __( 'Required Plugin', 'wds-required-plugins' ) );
+		$texts = array(
+			__( 'Required Network Plugin', 'wds-required-plugins' ) => array(
+				'filter'   => 'wds_required_plugins_text_multisite',
+				'property' => 'required_network_text',
+			),
+			__( 'Required Plugin', 'wds-required-plugins' )  => array(
+				'filter'   => 'wds_required_plugins_text',
+				'property' => 'required_text',
+			),
+		);
 
-		/**
-		 * Set the value for what shows when a plugin is required.
-		 *
-		 * E.g. by default it's Required, but you could change it to
-		 * "Cannot Deactivate" if you wanted to.
-		 *
-		 * @author Brad Parbs
-		 * @since  Unknown
-		 *
-		 * @param string $default The default value that you can change.
-		 */
-		$filtered = apply_filters( 'wds_required_plugins_text', $default );
+		foreach ( $texts as $text => $args ) {
+			$default = sprintf( $this->required_text_code, $text );
 
-		if ( is_string( $filtered ) ) {
-			$this->required_text = $filtered;
-		} else {
-			$this->required_text = $default;
+			/**
+			 * Set the value for what shows when a plugin is required.
+			 *
+			 * E.g. by default it's Required, but you could change it to
+			 * "Cannot Deactivate" if you wanted to.
+			 *
+			 * @author Justin Sternberg
+			 * @since  Unknown
+			 *
+			 * @param string $default The default value that you can change.
+			 */
+			$filtered = apply_filters( $args['filter'], $default );
+
+			// The property on this object we'll set for use later.
+			$property = $args['property'];
+			if ( is_string( $filtered ) ) {
+				$this->$property = $filtered;
+			} else {
+				$this->$property = $default;
+			}
 		}
+	}
+
+	/**
+	 * Get the property of something on this object.
+	 *
+	 * @author Aubrey Portwood
+	 * @since  1.0.0
+	 *
+	 * @param  string $property The property.
+	 * @param  mixed  $default  The default if it's not there.
+	 * @return mixed            The value of that property.
+	 */
+	public function get_property( $property, $default = '' ) {
+		return isset( $this->$property ) ? $this->$property : $default;
 	}
 
 	/**
@@ -308,6 +398,10 @@ class WDS_Required_Plugins {
 	 * @param array  $actions  Array of actions avaible.
 	 * @param string $plugin   Slug of plugin.
 	 *
+	 * @author Justin Sternberg
+	 * @author Brad Parbs
+	 * @author Aubrey Portwood Added documentation for filters.
+	 *
 	 * @return array
 	 */
 	public function filter_plugin_links( $actions = array(), $plugin ) {
@@ -315,23 +409,32 @@ class WDS_Required_Plugins {
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 
-		// Remove deactivate link for required plugins.
-		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins, true ) ) {
+		// Replace these action keys.
+		$action_keys = array(
+			'deactivate'     => $this->get_property( 'required_text' ),
+			'network_active' => $this->get_property( 'required_network_text' ),
+		);
 
-			/**
-			 * Should we remove the deactivated text for this plugin?
-			 *
-			 * @author  Brad Parbs
-			 * @since   Unknown
-			 *
-			 * @param boolean $remove Should we remove it? Default to true.
-			 * @param string  $plugin What plugin we're talking about.
-			 */
-			$wds_required_plugin_network_activate = apply_filters( 'wds_required_plugin_network_activate', true, $plugin );
+		foreach ( $action_keys as $key => $replacement ) {
 
-			// Filter if you don't want the required plugin to be network-required by default.
-			if ( ! is_multisite() || $wds_required_plugin_network_activate ) {
-				$actions['deactivate'] = $this->required_text;
+			// Remove deactivate link for required plugins.
+			if ( array_key_exists( $key, $actions ) && in_array( $plugin, $required_plugins, true ) ) {
+
+				/**
+				 * Should we remove the deactivated text for this plugin?
+				 *
+				 * @author  Brad Parbs
+				 * @since   Unknown
+				 *
+				 * @param boolean $remove Should we remove it? Default to true.
+				 * @param string  $plugin What plugin we're talking about.
+				 */
+				$wds_required_plugin_network_activate = apply_filters( 'wds_required_plugin_network_activate', true, $plugin );
+
+				// Filter if you don't want the required plugin to be network-required by default.
+				if ( $wds_required_plugin_network_activate ) {
+					$actions[ $key ] = "{$replacement}";
+				}
 			}
 		}
 
@@ -346,6 +449,8 @@ class WDS_Required_Plugins {
 	 * also do not show in the plugins list.
 	 *
 	 * @since   0.1.5
+	 * @author  Brad Parbs
+	 * @author  Aubrey Portwood Made it so mu-plugins are also unseen.
 	 *
 	 * @param   array $plugins Array of plugins.
 	 * @return  array          Array of plugins.
@@ -389,6 +494,8 @@ class WDS_Required_Plugins {
 	/**
 	 * Get the plugins that are required for the project. Plugins will be registered by the wds_required_plugins filter
 	 *
+	 * @author Justin Sternberg
+	 * @author Aubrey Portwood  Added filter documentation.
 	 * @since  0.1.0
 	 *
 	 * @return array
@@ -469,11 +576,13 @@ class WDS_Required_Plugins {
 	}
 
 	/**
-	 * Load this library's text domain
+	 * Load this library's text domain.
 	 *
+	 * @author Justin Sternberg
+	 * @author Brad Parbs
 	 * @since  0.1.1
 	 *
-	 * @return  void
+	 * @return void Early bails when it's un-necessary.
 	 */
 	public function l10n() {
 
