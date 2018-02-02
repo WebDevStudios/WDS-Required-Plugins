@@ -12,6 +12,8 @@
  *
  * @package     WDS_Required_Plugins
  * @since       0.1.4
+ *
+ * @props       v1.0.0 Patrick Garman, Justin Sternberg, Brad Parbs
  */
 
 // Exit if accessed directly.
