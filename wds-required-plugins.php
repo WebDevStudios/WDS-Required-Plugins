@@ -292,6 +292,10 @@ class WDS_Required_Plugins {
 	/**
 	 * Remove required plugins from the plugins list, if enabled.
 	 *
+	 * Must be enabled using the wds_required_plugin_remove_from_list filter.
+	 * When enabled, all the plugins that end up being WDS Required
+	 * also do not show in the plugins list.
+	 *
 	 * @since   0.1.5
 	 *
 	 * @param   array $plugins Array of plugins.
@@ -299,13 +303,31 @@ class WDS_Required_Plugins {
 	 */
 	public function maybe_remove_plugins_from_list( $plugins ) {
 
+		/**
+		 * Set to true to skip removing plugins from the list.
+		 *
+		 * Default to false (disabled).
+		 *
+		 * E.g.:
+		 *
+		 *     add_filter( 'wds_required_plugin_remove_from_list', '__return_true' );
+		 *
+		 * @author  Brad Parbs
+		 * @since   Unknown
+		 *
+		 * @param array $enabled Whether or not removing all plugins from the list is enabled.
+		 */
+		$enabled = apply_filters( 'wds_required_plugin_remove_from_list', false );
+
 		// Allow for removing all plugins from the plugins list.
-		if ( ! apply_filters( 'wds_required_plugin_remove_from_list', false ) ) {
+		if ( false === $enabled ) {
+
+			// Do not remove any plugins.
 			return $plugins;
 		}
 
 		// Loop through each of our required plugins.
-		foreach ( $this->get_required_plugins() as $required_plugin ) {
+		foreach ( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) as $required_plugin ) {
 
 			// Remove from the all plugins list.
 			unset( $plugins[ $required_plugin ] );
