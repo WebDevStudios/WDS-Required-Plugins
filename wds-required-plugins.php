@@ -63,19 +63,6 @@ class WDS_Required_Plugins {
 	private $required_text = '';
 
 	/**
-	 * Text/markup for required text for network active plugins.
-	 *
-	 * @see  self::required_text_markup() This will set the default value, but we
-	 *                                    can't here because we want to translate it.
-	 *
-	 * @var string
-	 *
-	 * @author Aubrey Portwood
-	 * @since  1.0.0
-	 */
-	private $required_network_text = '';
-
-	/**
 	 * Required Text Code.
 	 *
 	 * @author Aubrey Portwood
@@ -339,65 +326,27 @@ class WDS_Required_Plugins {
 	 * @since  0.1.0
 	 */
 	public function required_text_markup() {
-		$texts = array(
+		$default = sprintf( $this->required_text_code, __( 'Required Plugin', 'wds-required-plugins' ) );
 
-			// Multisite.
-			array(
+		/**
+		 * Set the value for what shows when a plugin is required.
+		 *
+		 * E.g. by default it's Required, but you could change it to
+		 * "Cannot Deactivate" if you wanted to.
+		 *
+		 * @author Justin Sternberg
+		 * @since  Unknown
+		 *
+		 * @param string $default The default value that you can change.
+		 */
+		$filtered = apply_filters( 'wds_required_plugins_text', $default );
 
-				// The value we'll set it to.
-				'text'     => __( 'Required Plugin', 'wds-required-plugins' ),
-
-				// The filter they can use to change it.
-				'filter'   => 'wds_required_plugins_text_multisite',
-
-				// Where we'll assign the value for later.
-				'property' => 'required_network_text',
-			),
-			array(
-				'text'     => __( 'Required Plugin', 'wds-required-plugins' ),
-				'filter'   => 'wds_required_plugins_text',
-				'property' => 'required_text',
-			),
-		);
-
-		foreach ( $texts as  $args ) {
-			$default = sprintf( $this->required_text_code, $args['text'] );
-
-			/**
-			 * Set the value for what shows when a plugin is required.
-			 *
-			 * E.g. by default it's Required, but you could change it to
-			 * "Cannot Deactivate" if you wanted to.
-			 *
-			 * @author Justin Sternberg
-			 * @since  Unknown
-			 *
-			 * @param string $default The default value that you can change.
-			 */
-			$filtered = apply_filters( $args['filter'], $default );
-
-			// The property on this object we'll set for use later.
-			$property = $args['property'];
-			if ( is_string( $filtered ) ) {
-				$this->$property = $filtered;
-			} else {
-				$this->$property = $default;
-			}
+		// The property on this object we'll set for use later.
+		if ( is_string( $filtered ) ) {
+			$this->required_text = $filtered;
+		} else {
+			$this->required_text = $default;
 		}
-	}
-
-	/**
-	 * Get the property of something on this object.
-	 *
-	 * @author Aubrey Portwood
-	 * @since  1.0.0
-	 *
-	 * @param  string $property The property.
-	 * @param  mixed  $default  The default if it's not there.
-	 * @return mixed            The value of that property.
-	 */
-	public function get_property( $property, $default = '' ) {
-		return isset( $this->$property ) ? $this->$property : $default;
 	}
 
 	/**
@@ -419,13 +368,13 @@ class WDS_Required_Plugins {
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 
-		// Replace these action keys.
+		// Replace these action keys with what we have set for required text.
 		$action_keys = array(
-			'deactivate'     => $this->get_property( 'required_text' ),
-			'network_active' => $this->get_property( 'required_network_text' ),
+			'deactivate',
+			'network_active',
 		);
 
-		foreach ( $action_keys as $key => $replacement ) {
+		foreach ( $action_keys as $key ) {
 
 			// Remove deactivate link for required plugins.
 			if ( array_key_exists( $key, $actions ) && in_array( $plugin, $required_plugins, true ) ) {
@@ -443,7 +392,7 @@ class WDS_Required_Plugins {
 
 				// Filter if you don't want the required plugin to be network-required by default.
 				if ( $wds_required_plugin_network_activate ) {
-					$actions[ $key ] = "{$replacement}";
+					$actions[ $key ] = $this->required_text;
 				}
 			}
 		}
