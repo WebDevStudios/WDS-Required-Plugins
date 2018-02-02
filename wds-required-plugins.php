@@ -113,6 +113,15 @@ class WDS_Required_Plugins {
 	 */
 	public function incompatible() {
 
+		// Our tests.
+		$this->incompatibilities = array(
+
+			/*
+			 * WP Migrate DB Pro is performing an AJAX migration.
+			 */
+			(boolean) $this->is_wpmdb(),
+		);
+
 		/**
 		 * Add or filter your incompatibility tests here.
 		 *
@@ -124,13 +133,12 @@ class WDS_Required_Plugins {
 		 * @since 1.0.0
 		 * @param array $incom A list of tests that determine incompatibilities.
 		 */
-		$this->incompatibilities = apply_filters( 'wds_required_plugins_incompatibilities', array(
+		$filter = apply_filters( 'wds_required_plugins_incompatibilities', $this->incompatibilities );
+		if ( is_array( $filter ) ) {
 
-			/*
-			 * WP Migrate DB Pro is performing an AJAX migration.
-			 */
-			(boolean) $this->is_wpmdb(),
-		) );
+			// The filter might have added more tests, use those.
+			$this->incompatibilities = $filter;
+		}
 
 		// If the array has any incompatibility, we are incompatible.
 		return in_array( true, $this->incompatibilities, true );
