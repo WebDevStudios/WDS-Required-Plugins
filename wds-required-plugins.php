@@ -234,8 +234,27 @@ class WDS_Required_Plugins {
 			return $result;
 		}
 
+		/**
+		 * Filter if a plugin is not found (that's required).
+		 *
+		 * For instance to disable all logging you could:
+		 *
+		 *     add_filter( 'wds_required_plugin_log_if_not_found', '__return_false' );
+		 *
+		 * Or, you could do it on a case-by-case basis with the $plugin being sent.
+		 *
+		 * @author  Brad Parbs
+		 * @since   Unknown
+		 *
+		 * @param boolean $log_not_found Whether the plugin is indeed found or not,
+		 *                               default to true in the normal case. Set to false
+		 *                               if you would like to override that and not log it,
+		 *                               for instance, if it's intentional.
+		 */
+		$log_not_found = apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network );
+
 		// If auto-activation failed, and there is an error, log it.
-		if ( apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network ) ) {
+		if ( $log_not_found ) {
 
 			// translators: %1 and %2 are explained below. Set default log text.
 			$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
@@ -259,7 +278,26 @@ class WDS_Required_Plugins {
 	 * @since  0.1.0
 	 */
 	public function required_text_markup() {
-		$this->required_text = apply_filters( 'wds_required_plugins_text', sprintf( '<span style="color: #888">%s</span>', __( 'WDS Required Plugin', 'wds-required-plugins' ) ) );
+		$default = sprintf( '<span style="color: #888">%s</span>', __( 'Required Plugin', 'wds-required-plugins' ) );
+
+		/**
+		 * Set the value for what shows when a plugin is required.
+		 *
+		 * E.g. by default it's Required, but you could change it to
+		 * "Cannot Deactivate" if you wanted to.
+		 *
+		 * @author Brad Parbs
+		 * @since  Unknown
+		 *
+		 * @param string $default The default value that you can change.
+		 */
+		$filtered = apply_filters( 'wds_required_plugins_text', $default );
+
+		if ( is_string( $filtered ) ) {
+			$this->required_text = $filtered;
+		} else {
+			$this->required_text = $default;
+		}
 	}
 
 	/**
@@ -280,8 +318,19 @@ class WDS_Required_Plugins {
 		// Remove deactivate link for required plugins.
 		if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin, $required_plugins, true ) ) {
 
+			/**
+			 * Should we remove the deactivated text for this plugin?
+			 *
+			 * @author  Brad Parbs
+			 * @since   Unknown
+			 *
+			 * @param boolean $remove Should we remove it? Default to true.
+			 * @param string  $plugin What plugin we're talking about.
+			 */
+			$wds_required_plugin_network_activate = apply_filters( 'wds_required_plugin_network_activate', true, $plugin );
+
 			// Filter if you don't want the required plugin to be network-required by default.
-			if ( ! is_multisite() || apply_filters( 'wds_required_plugin_network_activate', true, $plugin ) ) {
+			if ( ! is_multisite() || $wds_required_plugin_network_activate ) {
 				$actions['deactivate'] = $this->required_text;
 			}
 		}
