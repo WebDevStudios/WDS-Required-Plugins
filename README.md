@@ -7,6 +7,8 @@ A library you can use to make any plugins required and auto-activate.
 
 To use, place this library in your `mu-plugins/` directory (if you don't have one, create one in `wp-content/`), then use the example below:
 
+<a href="https://webdevstudios.com/contact/"><img src="https://webdevstudios.com/wp-content/uploads/2018/04/wds-github-banner.png" alt="WebDevStudios. WordPress for big brands."></a>
+
 ## Installation & Update
 
 You can easily run the below command from the `wp-content/mu-plugins` directory:
