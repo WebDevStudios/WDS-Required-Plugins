@@ -95,7 +95,11 @@ ____________________
 
 # Changelog
 
-- By default this script will `die()` if a required plugin is not found
+## 1.1.0
+
+- By default if a required plugin is not found, the script will throw an `Exception`
+    - Use filter `wds_required_plugin_stop_if_not_found` to stop this from happening
+- Installable via `composer`
 
 ## 1.0.0
 
