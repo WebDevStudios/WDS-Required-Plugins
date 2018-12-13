@@ -11,6 +11,47 @@ To use, place this library in your `mu-plugins/` directory (if you don't have on
 
 ## Installation & Update
 
+### With Composer
+
+Add the following to your `composer.json`
+
+```json
+{
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:WebDevStudios/WDS-Required-Plugins.git"
+        }
+    ],
+    "require": {
+        "webdevstudios/wds-required-plugins": "dev-master"
+    },
+    "extra": {
+        "installer-paths": {
+            "mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+        }
+    }
+}
+```
+
+This will install the `mu-plugin`, e.g. `mu-plugins/wds-required-plugins` in `wp-content` based projects. You will have to require it in e.g. `mu-plugins/wds-required-plugins-list.php`:
+
+```php
+<?php
+
+require WPMU_PLUGIN_DIR . '/wds-required-plugins/wds-required-plugins.php';
+
+function wds_required_plugins_add( $required ) {
+    return array_merge( $required, array(
+        'my-plugin/my-plugin.php`,
+    ) );
+}
+add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
+
+```
+
+### Without Composer
+
 You can easily run the below command from the `wp-content/mu-plugins` directory:
 
 ```sh
@@ -19,7 +60,7 @@ curl --remote-name https://raw.githubusercontent.com/WebDevStudios/WDS-Required-
 
 This will download and install the plugin automatically (and will update your file).
 
-### Clone the Repo
+#### Clone the Repo
 
 You can also clone the repo into your `wp-content/mu-plugins` directory, but you will have
 to load the library via before any of the examples below.
