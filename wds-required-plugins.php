@@ -333,7 +333,7 @@ class WDS_Required_Plugins {
 		 *
 		 * @param boolean $stop_not_found Set to false to not halt execution if a plugin is not found.
 		 */
-		$stop_not_found = apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network );
+		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', true, $plugin, $result, $network );
 
 		if ( $stop_not_found ) {
 			die();
