@@ -20,10 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( class_exists( 'WDS_Required_Plugins' ) ) {
-	return;
-}
-
 /**
  * Required plugins class
  *
