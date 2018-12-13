@@ -184,6 +184,7 @@ class WDS_Required_Plugins {
 	 * Activate required plugins if they are not.
 	 *
 	 * @since 0.1.1
+	 * @author Unknown
 	 * @return void Early bails when we don't need to activate it.
 	 */
 	public function activate_if_not() {
@@ -214,11 +215,17 @@ class WDS_Required_Plugins {
 	 * Activates a required plugin if it's found, and auto-activation is enabled.
 	 *
 	 * @since  0.1.4
+	 * @author  Unknown
+	 *
+	 * @author Aubrey Portwood <aubrey@webdevstudios.com>
+	 * @since 1.0.1 Added Exception if plugin not found.
 	 *
 	 * @param  string  $plugin  The plugin to activate.
 	 * @param  boolean $network Whether we are activating a network-required plugin.
 	 *
-	 * @return WP_Error|null    WP_Error on invalid file or null on success.
+	 * @return void
+	 *
+	 * @throws Exception If we can't activate a required plugin.
 	 */
 	public function maybe_activate_plugin( $plugin, $network = false ) {
 
@@ -279,7 +286,7 @@ class WDS_Required_Plugins {
 
 		// If we activated correctly, than return results of that.
 		if ( ! is_wp_error( $result ) ) {
-			return $result;
+			return;
 		}
 
 		/**
@@ -301,6 +308,10 @@ class WDS_Required_Plugins {
 		 */
 		$log_not_found = apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network );
 
+		if ( ! $log_not_found ) {
+			return;
+		}
+
 		// translators: %1 and %2 are explained below. Set default log text.
 		$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
 
@@ -321,20 +332,10 @@ class WDS_Required_Plugins {
 		 *
 		 * @param boolean $stop_not_found Set to false to not halt execution if a plugin is not found.
 		 */
-		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', true, $plugin, $result, $network );
+		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', false, $plugin, $result, $network );
 
-		// If auto-activation failed, and there is an error, log it.
-		if ( $log_not_found && ! $stop_not_found ) {
-
-			// Trigger our error, with all our log messages. @codingStandardsIgnoreLine: trigger_error okay here.
-			trigger_error( $s_message );
-		}
-
-		if ( $stop_not_found ) {
-			throw new Exception( $s_message );
-		}
-
-		return $result;
+		// @codingStandardsIgnoreLine: Throw the right kind of error.
+		$stop_not_found ? throw new Exception( $s_message ) : trigger_error( $s_message );
 	}
 
 	/**

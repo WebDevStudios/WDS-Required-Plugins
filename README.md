@@ -97,8 +97,9 @@ ____________________
 
 ## 1.1.0
 
-- By default if a required plugin is not found, the script will throw an `Exception`
-    - Use filter `wds_required_plugin_stop_if_not_found` to stop this from happening
+- You can have the project throw an `Exception` if there is an activation problem
+    - Use filter `wds_required_plugin_stop_if_not_found` set to `true` to throw
+    - *Note, this will be default behavior in future releases*
 - Installable via `composer`
 
 ## 1.0.0
