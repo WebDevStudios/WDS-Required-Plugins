@@ -334,8 +334,13 @@ class WDS_Required_Plugins {
 		 */
 		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', false, $plugin, $result, $network );
 
-		// @codingStandardsIgnoreLine: Throw the right kind of error.
-		$stop_not_found ? throw new Exception( $s_message ) : trigger_error( $s_message );
+		if ( $stop_not_found ) {
+			throw new Exception( $s_message );
+		} else {
+
+			// @codingStandardsIgnoreLine: Throw the right kind of error.
+			trigger_error( $s_message );
+		}
 	}
 
 	/**
