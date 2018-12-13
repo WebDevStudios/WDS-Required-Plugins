@@ -188,21 +188,6 @@ class WDS_Required_Plugins {
 	 */
 	public function activate_if_not() {
 
-		// Bail on ajax requests.
-		if ( wp_doing_ajax() ) {
-			return;
-		}
-
-		// Bail if we're not in the admin.
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		// Don't do anything if the user isn't permitted, or its an ajax request.
-		if ( ! current_user_can( 'activate_plugins' ) ) {
-			return;
-		}
-
 		// If we're installing multisite, then disable our plugins and bail out.
 		if ( defined( 'WP_INSTALLING_NETWORK' ) && WP_INSTALLING_NETWORK ) {
 			add_filter( 'pre_option_active_plugins', '__return_empty_array' );
@@ -236,16 +221,6 @@ class WDS_Required_Plugins {
 	 * @return WP_Error|null    WP_Error on invalid file or null on success.
 	 */
 	public function maybe_activate_plugin( $plugin, $network = false ) {
-
-		// Don't activate if already active.
-		if ( is_plugin_active( $plugin ) ) {
-			return;
-		}
-
-		// Don't activate if already network-active.
-		if ( $network && is_plugin_active_for_network( $plugin ) ) {
-			return;
-		}
 
 		/**
 		 * Filter if you don't want the required plugin to auto-activate. `true` by default.
@@ -281,6 +256,23 @@ class WDS_Required_Plugins {
 
 		// Filter if you don't want the required plugin to network-activate by default.
 		$network_wide = $network ? true : $is_multisite;
+
+		// Where is the plugin file?
+		$abs_plugin = trailingslashit( WP_PLUGIN_DIR ) . $plugin;
+
+		// Only if the plugin file exists, if it doesn't it needs to fail below.
+		if ( file_exists( $abs_plugin ) ) {
+
+			// Don't activate if already active.
+			if ( is_plugin_active( $plugin ) ) {
+				return;
+			}
+
+			// Don't activate if already network-active.
+			if ( $network && is_plugin_active_for_network( $plugin ) ) {
+				return;
+			}
+		}
 
 		// Activate the plugin.
 		$result = activate_plugin( $plugin, null, $network_wide );
@@ -321,13 +313,6 @@ class WDS_Required_Plugins {
 		// The message.
 		$s_message = sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) );
 
-		// If auto-activation failed, and there is an error, log it.
-		if ( $log_not_found ) {
-
-			// Trigger our error, with all our log messages. @codingStandardsIgnoreLine: trigger_error okay here.
-			trigger_error( $s_message );
-		}
-
 		/**
 		 * Filter whether we should stop if a plugin is not found.
 		 *
@@ -337,6 +322,13 @@ class WDS_Required_Plugins {
 		 * @param boolean $stop_not_found Set to false to not halt execution if a plugin is not found.
 		 */
 		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', true, $plugin, $result, $network );
+
+		// If auto-activation failed, and there is an error, log it.
+		if ( $log_not_found && ! $stop_not_found ) {
+
+			// Trigger our error, with all our log messages. @codingStandardsIgnoreLine: trigger_error okay here.
+			trigger_error( $s_message );
+		}
 
 		if ( $stop_not_found ) {
 			throw new Exception( $s_message );
