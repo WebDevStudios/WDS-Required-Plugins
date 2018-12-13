@@ -309,20 +309,23 @@ class WDS_Required_Plugins {
 		 */
 		$log_not_found = apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network );
 
+		// translators: %1 and %2 are explained below. Set default log text.
+		$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
+
+		// Filter the logging message format/text.
+		$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text', $default_log_text, $plugin, $result, $network );
+
+		// Get our error message.
+		$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
+
+		// The message.
+		$s_message = sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) );
+
 		// If auto-activation failed, and there is an error, log it.
 		if ( $log_not_found ) {
 
-			// translators: %1 and %2 are explained below. Set default log text.
-			$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
-
-			// Filter the logging message format/text.
-			$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text', $default_log_text, $plugin, $result, $network );
-
-			// Get our error message.
-			$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
-
 			// Trigger our error, with all our log messages. @codingStandardsIgnoreLine: trigger_error okay here.
-			trigger_error( sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) ) );
+			trigger_error( $s_message );
 		}
 
 		/**
@@ -336,7 +339,7 @@ class WDS_Required_Plugins {
 		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', true, $plugin, $result, $network );
 
 		if ( $stop_not_found ) {
-			die();
+			throw new Exception( $s_message );
 		}
 
 		return $result;

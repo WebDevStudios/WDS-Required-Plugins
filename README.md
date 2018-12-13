@@ -90,3 +90,33 @@ add_filter( 'wds_required_plugins_remove_from_list', '__return_true' );
 ```
 
 This will make any plugin that is required simply not show in the plugins list.
+
+____________________
+
+# Changelog
+
+- By default this script will `die()` if a required plugin is not found
+
+## 1.0.0
+
+- General code cleanup to get up to WDSCS
+- Will not break with using with WP Migrate DB PRO
+- Added incompatibility checks so you can disable it when certain actions are executed
+- Will not break when installing Multisite
+- *Required Plugin* is now shown on required plugins across multisite
+- Better code: more sanity checking and validations to avoid breakage
+- Better installation and update process, see `README.md`
+
+## 0.1.5
+
+- Add ability to remove plugins from the plugin list, if desired.
+- Comments / docblocks clean up.
+
+## 0.1.4
+
+- Will now log if/when a required plugin is not found.
+- New filters:
+    - `'wds_required_plugin_auto_activate'` - By default required plugins are auto-activated. This filter can disable that.
+    - `'wds_required_plugin_log_if_not_found'` - By default, missing required plugins will trigger an error in your log. This filter can disable that.
+    - `'wds_required_plugins_error_log_text'` - Filters the text format for the log entry.
+
