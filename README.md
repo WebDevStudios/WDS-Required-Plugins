@@ -99,7 +99,8 @@ ____________________
 
 - You can have the project throw an `Exception` if there is an activation problem
     - Use filter `wds_required_plugin_stop_if_not_found` set to `true` to throw
-    - *Note, this will be default behavior in future releases*
+    - *Note, this will be default behavior in a future release*
+    - Just add `add_filter( 'wds_required_plugin_stop_if_not_found', '__return_true' );`
 - Installable via `composer`
 
 ## 1.0.0
