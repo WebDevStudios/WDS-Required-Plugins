@@ -5,7 +5,7 @@
  * Description: Forcefully require specific plugins to be activated.
  * Author:      WebDevStudios
  * Author URI:  http://webdevstudios.com
- * Version:     1.0.0
+ * Version:     1.1.0
  * Domain:      wds-required-plugins
  * License:     GPLv2
  * Path:        languages
@@ -103,6 +103,7 @@ class WDS_Required_Plugins {
 	 * Initiate our hooks
 	 *
 	 * @since 0.1.0
+	 * @author  Unknown
 	 */
 	private function __construct() {
 
@@ -347,6 +348,7 @@ class WDS_Required_Plugins {
 	 * The required plugin label text.
 	 *
 	 * @since  0.1.0
+	 * @author Unknown
 	 */
 	public function required_text_markup() {
 		$default = sprintf( $this->required_text_code, __( 'Required Plugin', 'wds-required-plugins' ) );
@@ -520,6 +522,10 @@ class WDS_Required_Plugins {
 	 * Get the network plugins that are required for the project. Plugins will be registered by the wds_network_required_plugins filter
 	 *
 	 * @since  0.1.3
+	 * @author Patrick Garman
+	 *
+	 * @since  1.0.0  Cleanup and rewrite.
+	 * @author Aubrey Portwood <aubrey@webdevstudios.com>
 	 *
 	 * @return array
 	 */
