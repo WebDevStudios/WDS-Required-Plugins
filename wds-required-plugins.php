@@ -5,7 +5,7 @@
  * Description: Forcefully require specific plugins to be activated.
  * Author:      WebDevStudios
  * Author URI:  http://webdevstudios.com
- * Version:     1.0.0
+ * Version:     1.1.0
  * Domain:      wds-required-plugins
  * License:     GPLv2
  * Path:        languages
@@ -103,6 +103,7 @@ class WDS_Required_Plugins {
 	 * Initiate our hooks
 	 *
 	 * @since 0.1.0
+	 * @author  Unknown
 	 */
 	private function __construct() {
 
@@ -184,24 +185,10 @@ class WDS_Required_Plugins {
 	 * Activate required plugins if they are not.
 	 *
 	 * @since 0.1.1
+	 * @author Unknown
 	 * @return void Early bails when we don't need to activate it.
 	 */
 	public function activate_if_not() {
-
-		// Bail on ajax requests.
-		if ( wp_doing_ajax() ) {
-			return;
-		}
-
-		// Bail if we're not in the admin.
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		// Don't do anything if the user isn't permitted, or its an ajax request.
-		if ( ! current_user_can( 'activate_plugins' ) ) {
-			return;
-		}
 
 		// If we're installing multisite, then disable our plugins and bail out.
 		if ( defined( 'WP_INSTALLING_NETWORK' ) && WP_INSTALLING_NETWORK ) {
@@ -229,23 +216,19 @@ class WDS_Required_Plugins {
 	 * Activates a required plugin if it's found, and auto-activation is enabled.
 	 *
 	 * @since  0.1.4
+	 * @author  Unknown
+	 *
+	 * @author Aubrey Portwood <aubrey@webdevstudios.com>
+	 * @since 1.0.1 Added Exception if plugin not found.
 	 *
 	 * @param  string  $plugin  The plugin to activate.
 	 * @param  boolean $network Whether we are activating a network-required plugin.
 	 *
-	 * @return WP_Error|null    WP_Error on invalid file or null on success.
+	 * @return void
+	 *
+	 * @throws Exception If we can't activate a required plugin.
 	 */
 	public function maybe_activate_plugin( $plugin, $network = false ) {
-
-		// Don't activate if already active.
-		if ( is_plugin_active( $plugin ) ) {
-			return;
-		}
-
-		// Don't activate if already network-active.
-		if ( $network && is_plugin_active_for_network( $plugin ) ) {
-			return;
-		}
 
 		/**
 		 * Filter if you don't want the required plugin to auto-activate. `true` by default.
@@ -282,12 +265,29 @@ class WDS_Required_Plugins {
 		// Filter if you don't want the required plugin to network-activate by default.
 		$network_wide = $network ? true : $is_multisite;
 
+		// Where is the plugin file?
+		$abs_plugin = trailingslashit( WP_PLUGIN_DIR ) . $plugin;
+
+		// Only if the plugin file exists, if it doesn't it needs to fail below.
+		if ( file_exists( $abs_plugin ) ) {
+
+			// Don't activate if already active.
+			if ( is_plugin_active( $plugin ) ) {
+				return;
+			}
+
+			// Don't activate if already network-active.
+			if ( $network && is_plugin_active_for_network( $plugin ) ) {
+				return;
+			}
+		}
+
 		// Activate the plugin.
 		$result = activate_plugin( $plugin, null, $network_wide );
 
 		// If we activated correctly, than return results of that.
 		if ( ! is_wp_error( $result ) ) {
-			return $result;
+			return;
 		}
 
 		/**
@@ -309,29 +309,46 @@ class WDS_Required_Plugins {
 		 */
 		$log_not_found = apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network );
 
-		// If auto-activation failed, and there is an error, log it.
-		if ( $log_not_found ) {
-
-			// translators: %1 and %2 are explained below. Set default log text.
-			$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
-
-			// Filter the logging message format/text.
-			$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text', $default_log_text, $plugin, $result, $network );
-
-			// Get our error message.
-			$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
-
-			// Trigger our error, with all our log messages. @codingStandardsIgnoreLine: trigger_error okay here.
-			trigger_error( sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) ) );
+		if ( ! $log_not_found ) {
+			return;
 		}
 
-		return $result;
+		// translators: %1 and %2 are explained below. Set default log text.
+		$default_log_text = __( 'Required Plugin auto-activation failed for: %1$s, with message: %2$s', 'wds-required-plugins' );
+
+		// Filter the logging message format/text.
+		$log_msg_format = apply_filters( 'wds_required_plugins_error_log_text', $default_log_text, $plugin, $result, $network );
+
+		// Get our error message.
+		$error_message = method_exists( $result, 'get_error_message' ) ? $result->get_error_message() : '';
+
+		// The message.
+		$s_message = sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) );
+
+		/**
+		 * Filter whether we should stop if a plugin is not found.
+		 *
+		 * @since  1.1.0
+		 * @author Aubrey Portwood <aubrey@webdevstudios.com>
+		 *
+		 * @param boolean $stop_not_found Set to false to not halt execution if a plugin is not found.
+		 */
+		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', false, $plugin, $result, $network );
+
+		if ( $stop_not_found ) {
+			throw new Exception( $s_message );
+		} else {
+
+			// @codingStandardsIgnoreLine: Throw the right kind of error.
+			trigger_error( $s_message );
+		}
 	}
 
 	/**
 	 * The required plugin label text.
 	 *
 	 * @since  0.1.0
+	 * @author Unknown
 	 */
 	public function required_text_markup() {
 		$default = sprintf( $this->required_text_code, __( 'Required Plugin', 'wds-required-plugins' ) );
@@ -505,6 +522,10 @@ class WDS_Required_Plugins {
 	 * Get the network plugins that are required for the project. Plugins will be registered by the wds_network_required_plugins filter
 	 *
 	 * @since  0.1.3
+	 * @author Patrick Garman
+	 *
+	 * @since  1.0.0  Cleanup and rewrite.
+	 * @author Aubrey Portwood <aubrey@webdevstudios.com>
 	 *
 	 * @return array
 	 */
