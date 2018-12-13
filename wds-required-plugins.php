@@ -325,6 +325,20 @@ class WDS_Required_Plugins {
 			trigger_error( sprintf( esc_attr( $log_msg_format ), esc_attr( $plugin ), esc_attr( $error_message ) ) );
 		}
 
+		/**
+		 * Filter whether we should stop if a plugin is not found.
+		 *
+		 * @since  1.1.0
+		 * @author Aubrey Portwood <aubrey@webdevstudios.com>
+		 *
+		 * @param boolean $stop_not_found Set to false to not halt execution if a plugin is not found.
+		 */
+		$stop_not_found = apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network );
+
+		if ( $stop_not_found ) {
+			die();
+		}
+
 		return $result;
 	}
 
