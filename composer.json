@@ -1,0 +1,7 @@
+{
+	"name": "webdevstudios/wds-required-plugins",
+	"type": "wordpress-muplugin",
+	"require": {
+		"composer/installers": "~1.0"
+	}
+}
