@@ -108,22 +108,24 @@ class WDS_Required_Plugins {
 	private function __construct() {
 
 		// Only if we are not incompatible with something.
-		if ( ! $this->incompatible() ) {
-
-			// Attempt activation + load text domain in the admin.
-			add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
-			add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
-
-			// Filter plugin links to remove deactivate option.
-			add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-			add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-
-			// Remove plugins from the plugins.
-			add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
-
-			// Load text domain.
-			add_action( 'plugins_loaded', array( $this, 'l10n' ) );
+		if ( $this->incompatible() ) {
+			return;
 		}
+
+		// Attempt activation + load text domain in the admin.
+		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
+		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
+		add_filter( 'extra_plugin_headers', array( $this, 'add_required_plugin_header' ) );
+
+		// Filter plugin links to remove deactivate option.
+		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+
+		// Remove plugins from the plugins.
+		add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
+
+		// Load text domain.
+		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
 	}
 
 	/**
@@ -617,6 +619,26 @@ class WDS_Required_Plugins {
 		$mofile = dirname( __FILE__ ) . '/languages/wds-required-plugins-' . $locale . '.mo';
 		load_textdomain( 'wds-required-plugins', $mofile );
 		self::$l10n_done = true;
+	}
+
+	/**
+	 * Adds a header field for required plugins when WordPress reads plugin data.
+	 *
+	 * @since NEXT
+	 * @author Zach Owen
+	 *
+	 * @param array $extra_headers Extra headers filtered in WP core.
+	 * @return array
+	 */
+	public function add_required_plugin_header( $extra_headers ) {
+		$required_header = $this->get_required_header();
+
+		if ( in_array( $required_header, $extra_headers, true ) ) {
+			return $extra_headers;
+		}
+
+		$extra_headers[] = $required_header;
+		return $extra_headers;
 	}
 }
 
