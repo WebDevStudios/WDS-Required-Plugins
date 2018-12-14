@@ -651,7 +651,7 @@ class WDS_Required_Plugins {
 	 *
 	 * @return array
 	 */
-    public function get_header_required_plugins() {
+	public function get_header_required_plugins() {
 		$all_plugins = apply_filters( 'all_plugins', get_plugins() );
 
 		if ( empty( $all_plugins ) ) {
