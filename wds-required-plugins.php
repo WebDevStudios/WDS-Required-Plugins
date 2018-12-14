@@ -517,6 +517,8 @@ class WDS_Required_Plugins {
 			return array();
 		}
 
+		$required_plugins = array_merge( $required_plugins, $this->get_header_required_plugins() );
+
 		return $required_plugins;
 	}
 
@@ -639,6 +641,62 @@ class WDS_Required_Plugins {
 
 		$extra_headers[] = $required_header;
 		return $extra_headers;
+	}
+
+	/**
+	 * Return a list of plugins with the required header set.
+	 *
+	 * @since NEXT
+	 * @author Zach Owen
+	 *
+	 * @return array
+	 */
+    public function get_header_required_plugins() {
+		$all_plugins = apply_filters( 'all_plugins', get_plugins() );
+
+		if ( empty( $all_plugins ) ) {
+			return;
+		}
+
+		$required_header = $this->get_required_header();
+		$plugins         = [];
+
+		foreach ( $all_plugins as $file => $headers ) {
+			if ( empty( $headers[ $required_header ] ) ) {
+				continue;
+			}
+
+			$plugins[] = $file;
+		}
+
+		return $plugins;
+	}
+
+	/**
+	 * Get the key to use for the required plugin header identifier.
+	 *
+	 * @author Zach Owen
+	 * @since NEXT
+	 *
+	 * @return string
+	 */
+	private function get_required_header() {
+		/**
+		 * Filter the text used as the identifier for the plugin being
+		 * required.
+		 *
+		 * @author Zach Owen
+		 * @since NEXT
+		 *
+		 * @param string $header The string to use as the identifier.
+		 */
+		$header = apply_filters( 'wds_required_plugin_header', 'Required' );
+
+		if ( ! is_string( $header ) || empty( $header ) ) {
+			return 'Required';
+		}
+
+		return $header;
 	}
 }
 
