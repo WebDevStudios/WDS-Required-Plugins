@@ -136,6 +136,10 @@ ____________________
 
 # Changelog
 
+## 1.2.0 
+
+- Added ability to add `Required: true` to plugin header to make plugin required vs. adding to filtered list <sup>[#20](https://github.com/WebDevStudios/WDS-Required-Plugins/pull/20/files)</sup>
+
 ## 1.1.0
 
 - You can have the project throw an `Exception` if there is an activation problem

@@ -5,7 +5,7 @@
  * Description: Forcefully require specific plugins to be activated.
  * Author:      WebDevStudios
  * Author URI:  http://webdevstudios.com
- * Version:     1.1.0
+ * Version:     1.2.0
  * Domain:      wds-required-plugins
  * License:     GPLv2
  * Path:        languages
@@ -13,6 +13,8 @@
  *
  * @package     WDS_Required_Plugins
  * @since       0.1.4
+ *
+ * Required:    true
  */
 
 // Exit if accessed directly.
@@ -104,26 +106,28 @@ class WDS_Required_Plugins {
 	 *
 	 * @since 0.1.0
 	 * @author  Unknown
+	 *
+	 * @return void
 	 */
 	private function __construct() {
-
-		// Only if we are not incompatible with something.
-		if ( ! $this->incompatible() ) {
-
-			// Attempt activation + load text domain in the admin.
-			add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
-			add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
-
-			// Filter plugin links to remove deactivate option.
-			add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-			add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-
-			// Remove plugins from the plugins.
-			add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
-
-			// Load text domain.
-			add_action( 'plugins_loaded', array( $this, 'l10n' ) );
+		if ( $this->incompatible() ) {
+			return;
 		}
+
+		// Attempt activation + load text domain in the admin.
+		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
+		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
+		add_filter( 'extra_plugin_headers', array( $this, 'add_required_plugin_header' ) );
+
+		// Filter plugin links to remove deactivate option.
+		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+
+		// Remove plugins from the plugins.
+		add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
+
+		// Load text domain.
+		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
 	}
 
 	/**
@@ -142,7 +146,7 @@ class WDS_Required_Plugins {
 			/*
 			 * WP Migrate DB Pro is performing an AJAX migration.
 			 */
-			(boolean) $this->is_wpmdb(),
+			(bool) $this->is_wpmdb(),
 		);
 
 		/**
@@ -515,6 +519,8 @@ class WDS_Required_Plugins {
 			return array();
 		}
 
+		$required_plugins = array_merge( $required_plugins, $this->get_header_required_plugins() );
+
 		return $required_plugins;
 	}
 
@@ -617,6 +623,101 @@ class WDS_Required_Plugins {
 		$mofile = dirname( __FILE__ ) . '/languages/wds-required-plugins-' . $locale . '.mo';
 		load_textdomain( 'wds-required-plugins', $mofile );
 		self::$l10n_done = true;
+	}
+
+	/**
+	 * Adds a header field for required plugins when WordPress reads plugin data.
+	 *
+	 * @since 1.2.0
+	 * @author Zach Owen
+	 *
+	 * @param array $extra_headers Extra headers filtered in WP core.
+	 * @return array
+	 */
+	public function add_required_plugin_header( $extra_headers ) {
+		$required_header = $this->get_required_header();
+
+		if ( in_array( $required_header, $extra_headers, true ) ) {
+			return $extra_headers;
+		}
+
+		$extra_headers[] = $required_header;
+		return $extra_headers;
+	}
+
+	/**
+	 * Return a list of plugins with the required header set.
+	 *
+	 * @since 1.2.0
+	 * @author Zach Owen
+	 *
+	 * @return array
+	 */
+	public function get_header_required_plugins() {
+		$all_plugins = apply_filters( 'all_plugins', get_plugins() );
+
+		if ( empty( $all_plugins ) ) {
+			return;
+		}
+
+		$required_header = $this->get_required_header();
+		$plugins         = [];
+
+		/**
+		 * Filter the value for the header that would indicate the plugin as required.
+		 *
+		 * @author Aubrey Portwood <aubrey@webdevstudios.com>
+		 * @since  1.2.0
+		 *
+		 * @var array
+		 */
+		$values = apply_filters( 'wds_required_plugins_required_header_values', [
+			'true',
+			'yes',
+			'1',
+			'on',
+			'required',
+			'require',
+		] );
+
+		foreach ( $all_plugins as $file => $headers ) {
+			if ( ! in_array( $headers[ $required_header ], $values, true ) ) {
+				continue;
+			}
+
+			$plugins[] = $file;
+		}
+
+		return $plugins;
+	}
+
+	/**
+	 * Get the key to use for the required plugin header identifier.
+	 *
+	 * @author Zach Owen
+	 * @since 1.2.0
+	 *
+	 * @return string
+	 */
+	private function get_required_header() {
+		$header_text = 'Required';
+
+		/**
+		 * Filter the text used as the identifier for the plugin being
+		 * required.
+		 *
+		 * @author Zach Owen
+		 * @since 1.2.0
+		 *
+		 * @param string $header The string to use as the identifier.
+		 */
+		$header = apply_filters( 'wds_required_plugin_header', $header_text );
+
+		if ( ! is_string( $header ) || empty( $header ) ) {
+			return $header_text;
+		}
+
+		return $header;
 	}
 }
 
