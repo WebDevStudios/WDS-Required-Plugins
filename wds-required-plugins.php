@@ -13,6 +13,8 @@
  *
  * @package     WDS_Required_Plugins
  * @since       0.1.4
+ *
+ * Required:    true
  */
 
 // Exit if accessed directly.
