@@ -626,7 +626,7 @@ class WDS_Required_Plugins {
 	/**
 	 * Adds a header field for required plugins when WordPress reads plugin data.
 	 *
-	 * @since NEXT
+	 * @since 1.2.0
 	 * @author Zach Owen
 	 *
 	 * @param array $extra_headers Extra headers filtered in WP core.
@@ -646,7 +646,7 @@ class WDS_Required_Plugins {
 	/**
 	 * Return a list of plugins with the required header set.
 	 *
-	 * @since NEXT
+	 * @since 1.2.0
 	 * @author Zach Owen
 	 *
 	 * @return array
@@ -661,8 +661,25 @@ class WDS_Required_Plugins {
 		$required_header = $this->get_required_header();
 		$plugins         = [];
 
+		/**
+		 * Filter the value for the header that would indicate the plugin as required.
+		 *
+		 * @author Aubrey Portwood <aubrey@webdevstudios.com>
+		 * @since  1.2.0
+		 *
+		 * @var array
+		 */
+		$values = apply_filters( 'wds_required_plugins_required_header_values', [
+			'true',
+			'yes',
+			'1',
+			'on',
+			'required',
+			'require',
+		] );
+
 		foreach ( $all_plugins as $file => $headers ) {
-			if ( empty( $headers[ $required_header ] ) ) {
+			if ( ! in_array( $headers[ $required_header ], $values, true ) ) {
 				continue;
 			}
 
@@ -676,24 +693,26 @@ class WDS_Required_Plugins {
 	 * Get the key to use for the required plugin header identifier.
 	 *
 	 * @author Zach Owen
-	 * @since NEXT
+	 * @since 1.2.0
 	 *
 	 * @return string
 	 */
 	private function get_required_header() {
+		$header_text = 'Required';
+
 		/**
 		 * Filter the text used as the identifier for the plugin being
 		 * required.
 		 *
 		 * @author Zach Owen
-		 * @since NEXT
+		 * @since 1.2.0
 		 *
 		 * @param string $header The string to use as the identifier.
 		 */
-		$header = apply_filters( 'wds_required_plugin_header', 'Required' );
+		$header = apply_filters( 'wds_required_plugin_header', $header_text );
 
 		if ( ! is_string( $header ) || empty( $header ) ) {
-			return 'Required';
+			return $header_text;
 		}
 
 		return $header;
