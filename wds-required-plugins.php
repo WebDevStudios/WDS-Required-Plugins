@@ -104,10 +104,10 @@ class WDS_Required_Plugins {
 	 *
 	 * @since 0.1.0
 	 * @author  Unknown
+	 *
+	 * @return void
 	 */
 	private function __construct() {
-
-		// Only if we are not incompatible with something.
 		if ( $this->incompatible() ) {
 			return;
 		}
@@ -144,7 +144,7 @@ class WDS_Required_Plugins {
 			/*
 			 * WP Migrate DB Pro is performing an AJAX migration.
 			 */
-			(boolean) $this->is_wpmdb(),
+			(bool) $this->is_wpmdb(),
 		);
 
 		/**
