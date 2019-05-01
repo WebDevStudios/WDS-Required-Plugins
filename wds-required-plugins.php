@@ -5,7 +5,7 @@
  * Description: Forcefully require specific plugins to be activated.
  * Author:      WebDevStudios
  * Author URI:  http://webdevstudios.com
- * Version:     1.1.0
+ * Version:     1.2.0
  * Domain:      wds-required-plugins
  * License:     GPLv2
  * Path:        languages
