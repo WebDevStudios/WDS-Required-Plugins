@@ -115,8 +115,8 @@ class WDS_Required_Plugins {
 		}
 
 		// Attempt activation + load text domain in the admin.
-		add_filter( 'admin_init', array( $this, 'activate_if_not' ) );
-		add_filter( 'admin_init', array( $this, 'required_text_markup' ) );
+		add_action( 'admin_init', array( $this, 'activate_if_not' ) );
+		add_action( 'admin_init', array( $this, 'required_text_markup' ) );
 		add_filter( 'extra_plugin_headers', array( $this, 'add_required_plugin_header' ) );
 
 		// Filter plugin links to remove deactivate option.
