@@ -49,25 +49,6 @@ add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
 
 ```
 
-### Without Composer
-
-You can easily run the below command from the `wp-content/mu-plugins` directory:
-
-```sh
-curl --remote-name https://raw.githubusercontent.com/WebDevStudios/WDS-Required-Plugins/master/wds-required-plugins.php
-```
-
-This will download and install the plugin automatically (and will update your file).
-
-#### Clone the Repo
-
-You can also clone the repo into your `wp-content/mu-plugins` directory, but you will have
-to load the library via before any of the examples below.
-
-```php
-require_once WPMU_PLUGIN_DIR . '/WDS-Required-Plugins/wds-required-plugins.php';
-```
-
 ## Example Usage
 
 ```php
