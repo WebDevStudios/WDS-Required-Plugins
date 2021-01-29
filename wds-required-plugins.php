@@ -17,10 +17,14 @@
  * Required:    true
  */
 
+namespace \WebDevStudios\Required_Plugins;
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+require_once 'src/WP/CLI.php';
 
 /**
  * Required plugins class
@@ -30,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @subpackage Project
  * @since      Unknown
  */
-class WDS_Required_Plugins {
+class Plugin {
 
 	/**
 	 * Instance of this class.
@@ -38,7 +42,7 @@ class WDS_Required_Plugins {
 	 * @author Justin Sternberg
 	 * @since Unknown
 	 *
-	 * @var WDS_Required_Plugins object
+	 * @var Plugin object
 	 */
 	public static $instance = null;
 
@@ -91,7 +95,7 @@ class WDS_Required_Plugins {
 	 * @since  0.1.0
 	 * @author Justin Sternberg
 	 *
-	 * @return WDS_Required_Plugins A single instance of this class.
+	 * @return Plugin A single instance of this class.
 	 */
 	public static function init() {
 		if ( null === self::$instance ) {
@@ -722,4 +726,4 @@ class WDS_Required_Plugins {
 }
 
 // Init.
-WDS_Required_Plugins::init();
+Plugin::init();
