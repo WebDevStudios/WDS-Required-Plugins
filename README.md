@@ -17,15 +17,6 @@ Add the following to your `composer.json`
 
 ```json
 {
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:WebDevStudios/WDS-Required-Plugins.git"
-        }
-    ],
-    "require": {
-        "webdevstudios/wds-required-plugins": "dev-master"
-    },
     "extra": {
         "installer-paths": {
             "mu-plugins/{$name}/": ["type:wordpress-muplugin"]
@@ -34,7 +25,15 @@ Add the following to your `composer.json`
 }
 ```
 
-This will install the `mu-plugin`, e.g. `mu-plugins/wds-required-plugins` in `wp-content` based projects. You will have to require it in e.g. `mu-plugins/wds-required-plugins-list.php`:
+Then use:
+
+```bash
+composer require webdevstudios/wds-required-plugins
+```
+
+This will install the `mu-plugin`, e.g. `mu-plugins/wds-required-plugins` in `wp-content` based projects. 
+
+You will have to require it in e.g. `mu-plugins/wds-required-plugins-list.php`:
 
 ```php
 <?php
