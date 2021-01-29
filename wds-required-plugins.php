@@ -17,7 +17,7 @@
  * Required:    true
  */
 
-namespace \WebDevStudios\Required_Plugins;
+namespace WebDevStudios\Required_Plugins;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -661,7 +661,7 @@ class Plugin {
 		$all_plugins = apply_filters( 'all_plugins', get_plugins() );
 
 		if ( empty( $all_plugins ) ) {
-			return;
+			return [];
 		}
 
 		$required_header = $this->get_required_header();
