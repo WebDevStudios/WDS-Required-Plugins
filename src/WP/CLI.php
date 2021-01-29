@@ -25,11 +25,13 @@ class CLI {
 		if ( ! file_exists( $file ) ) {
 			\WP_CLI::error( sprintf( __( "Could not location plugin: %s", 'wds-required-plugins' ), "{$file}" ) );
 		}
+
+		\WP_CLI::log( $file );
 	}
 
 	private function resolve_plugin_file( string $file ) : string {
 		if ( file_exists( $file ) ) {
-			return $file; // What they gave us is there.
+			return realpath( $file ) ?: ''; // What they gave us is there.
 		}
 
 		// Try and use from working directory, maybe it's relative.
