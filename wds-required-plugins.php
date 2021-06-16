@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @subpackage Project
  * @since      Unknown
  */
-class WDS_Required_Plugins {
+final class WDS_Required_Plugins {
 
 	/**
 	 * Instance of this class.
