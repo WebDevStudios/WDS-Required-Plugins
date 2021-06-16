@@ -45,7 +45,7 @@ final class WDS_Required_Plugins {
 	/**
 	 * Whether text-domain has been registered.
 	 *
-	 * @var boolean
+	 * @var bool
 	 *
 	 * @author Justin Sternberg
 	 * @since  Unknown
@@ -107,7 +107,6 @@ final class WDS_Required_Plugins {
 	 * @since 0.1.0
 	 * @author  Unknown
 	 *
-	 * @return void
 	 */
 	private function __construct() {
 		if ( $this->incompatible() ) {
@@ -136,7 +135,7 @@ final class WDS_Required_Plugins {
 	 * @author Aubrey Portwood
 	 * @since  1.0.0
 	 *
-	 * @return boolean True if we are incompatible with something, false if not.
+	 * @return bool True if we are incompatible with something, false if not.
 	 */
 	public function incompatible() {
 
@@ -177,7 +176,7 @@ final class WDS_Required_Plugins {
 	 * @author Aubrey Portwood
 	 * @since  1.0.0
 	 *
-	 * @return boolean True if we find wpmdb set as the action.
+	 * @return bool True if we find wpmdb set as the action.
 	 */
 	public function is_wpmdb() {
 
@@ -190,7 +189,6 @@ final class WDS_Required_Plugins {
 	 *
 	 * @since 0.1.1
 	 * @author Unknown
-	 * @return void Early bails when we don't need to activate it.
 	 */
 	public function activate_if_not() {
 
@@ -225,10 +223,8 @@ final class WDS_Required_Plugins {
 	 * @author Aubrey Portwood <aubrey@webdevstudios.com>
 	 * @since 1.0.1 Added Exception if plugin not found.
 	 *
-	 * @param  string  $plugin  The plugin to activate.
-	 * @param  boolean $network Whether we are activating a network-required plugin.
-	 *
-	 * @return void
+	 * @param string $plugin  The plugin to activate.
+	 * @param bool   $network Whether we are activating a network-required plugin.
 	 *
 	 * @throws Exception If we can't activate a required plugin.
 	 */
@@ -243,9 +239,9 @@ final class WDS_Required_Plugins {
 		 * @author  Justin Sternberg
 		 * @since   Unknown
 		 *
-		 * @param boolean $auto_activate Should we auto-activate the plugin, true by default.
-		 * @param string  $plugin        The plugin being activated.
-		 * @param string  $network       On what network?
+		 * @param bool   $auto_activate Should we auto-activate the plugin, true by default.
+		 * @param string $plugin        The plugin being activated.
+		 * @param string $network       On what network?
 		 */
 		$auto_activate = apply_filters( 'wds_required_plugin_auto_activate', true, $plugin, $network );
 		if ( ! $auto_activate ) {
@@ -260,9 +256,9 @@ final class WDS_Required_Plugins {
 		 * @author  Justin Sternberg
 		 * @since   Unknown
 		 *
-		 * @param boolean $is_multisite The value of is_multisite().
-		 * @param string  $plugin       The plugin being activated.
-		 * @param string  $network      The network.
+		 * @param bool   $is_multisite The value of is_multisite().
+		 * @param string $plugin       The plugin being activated.
+		 * @param string $network      The network.
 		 */
 		$is_multisite = apply_filters( 'wds_required_plugin_network_activate', is_multisite(), $plugin, $network );
 
@@ -306,10 +302,10 @@ final class WDS_Required_Plugins {
 		 * @author  Justin Sternberg
 		 * @since   Unknown
 		 *
-		 * @param boolean $log_not_found Whether the plugin is indeed found or not,
-		 *                               default to true in the normal case. Set to false
-		 *                               if you would like to override that and not log it,
-		 *                               for instance, if it's intentional.
+		 * @param bool $log_not_found Whether the plugin is indeed found or not,
+		 *                            default to true in the normal case. Set to false
+		 *                            if you would like to override that and not log it,
+		 *                            for instance, if it's intentional.
 		 */
 		$log_not_found = apply_filters( 'wds_required_plugin_log_if_not_found', true, $plugin, $result, $network );
 
@@ -335,7 +331,7 @@ final class WDS_Required_Plugins {
 		 * @since  1.1.0
 		 * @author Aubrey Portwood <aubrey@webdevstudios.com>
 		 *
-		 * @param boolean $stop_not_found Set to false to not halt execution if a plugin is not found.
+		 * @param bool $stop_not_found Set to false to not halt execution if a plugin is not found.
 		 */
 		$stop_not_found = apply_filters( 'wds_required_plugin_stop_if_not_found', false, $plugin, $result, $network );
 
@@ -383,8 +379,8 @@ final class WDS_Required_Plugins {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array  $actions  Array of actions avaible.
-	 * @param string $plugin   Slug of plugin.
+	 * @param array  $actions Array of actions avaible.
+	 * @param string $plugin  Slug of plugin.
 	 *
 	 * @author Justin Sternberg
 	 * @author Brad Parbs
@@ -414,8 +410,8 @@ final class WDS_Required_Plugins {
 				 * @author  Brad Parbs
 				 * @since   Unknown
 				 *
-				 * @param boolean $remove Should we remove it? Default to true.
-				 * @param string  $plugin What plugin we're talking about.
+				 * @param bool   $remove Should we remove it? Default to true.
+				 * @param string $plugin What plugin we're talking about.
 				 */
 				$wds_required_plugin_network_activate = apply_filters( 'wds_required_plugin_network_activate', true, $plugin );
 
@@ -440,8 +436,8 @@ final class WDS_Required_Plugins {
 	 * @author  Brad Parbs
 	 * @author  Aubrey Portwood Made it so mu-plugins are also unseen.
 	 *
-	 * @param   array $plugins Array of plugins.
-	 * @return  array          Array of plugins.
+	 * @param  array $plugins Array of plugins.
+	 * @return array Array of plugins.
 	 */
 	public function maybe_remove_plugins_from_list( $plugins ) {
 
@@ -576,7 +572,6 @@ final class WDS_Required_Plugins {
 	 * @author Brad Parbs
 	 * @since  0.1.1
 	 *
-	 * @return void Early bails when it's un-necessary.
 	 */
 	public function l10n() {
 
@@ -631,7 +626,7 @@ final class WDS_Required_Plugins {
 	 * @since 1.2.0
 	 * @author Zach Owen
 	 *
-	 * @param array $extra_headers Extra headers filtered in WP core.
+	 * @param  array $extra_headers Extra headers filtered in WP core.
 	 * @return array
 	 */
 	public function add_required_plugin_header( $extra_headers ) {
