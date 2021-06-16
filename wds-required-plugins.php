@@ -83,7 +83,7 @@ class WDS_Required_Plugins {
 	 *
 	 * @var array
 	 */
-	public $incompatibilities = array();
+	public $incompatibilities = [];
 
 	/**
 	 * Creates or returns an instance of this class.
@@ -115,19 +115,19 @@ class WDS_Required_Plugins {
 		}
 
 		// Attempt activation + load text domain in the admin.
-		add_action( 'admin_init', array( $this, 'activate_if_not' ) );
-		add_action( 'admin_init', array( $this, 'required_text_markup' ) );
-		add_filter( 'extra_plugin_headers', array( $this, 'add_required_plugin_header' ) );
+		add_action( 'admin_init', [ $this, 'activate_if_not' ] );
+		add_action( 'admin_init', [ $this, 'required_text_markup' ] );
+		add_filter( 'extra_plugin_headers', [ $this, 'add_required_plugin_header' ] );
 
 		// Filter plugin links to remove deactivate option.
-		add_filter( 'plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
-		add_filter( 'network_admin_plugin_action_links', array( $this, 'filter_plugin_links' ), 10, 2 );
+		add_filter( 'plugin_action_links', [ $this, 'filter_plugin_links' ], 10, 2 );
+		add_filter( 'network_admin_plugin_action_links', [ $this, 'filter_plugin_links' ], 10, 2 );
 
 		// Remove plugins from the plugins.
-		add_filter( 'all_plugins', array( $this, 'maybe_remove_plugins_from_list' ) );
+		add_filter( 'all_plugins', [ $this, 'maybe_remove_plugins_from_list' ] );
 
 		// Load text domain.
-		add_action( 'plugins_loaded', array( $this, 'l10n' ) );
+		add_action( 'plugins_loaded', [ $this, 'l10n' ] );
 	}
 
 	/**
@@ -141,13 +141,13 @@ class WDS_Required_Plugins {
 	public function incompatible() {
 
 		// Our tests.
-		$this->incompatibilities = array(
+		$this->incompatibilities = [
 
 			/*
 			 * WP Migrate DB Pro is performing an AJAX migration.
 			 */
 			(bool) $this->is_wpmdb(),
-		);
+		];
 
 		/**
 		 * Add or filter your incompatibility tests here.
@@ -398,10 +398,10 @@ class WDS_Required_Plugins {
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 
 		// Replace these action keys with what we have set for required text.
-		$action_keys = array(
+		$action_keys = [
 			'deactivate',
 			'network_active',
-		);
+		];
 
 		foreach ( $action_keys as $key ) {
 
@@ -516,7 +516,7 @@ class WDS_Required_Plugins {
 		if ( ! is_array( $required_plugins ) ) {
 
 			// The person who filtered this broke it.
-			return array();
+			return [];
 		}
 
 		$required_plugins = array_merge( $required_plugins, $this->get_header_required_plugins() );
@@ -563,7 +563,7 @@ class WDS_Required_Plugins {
 		if ( ! is_array( $required_plugins ) ) {
 
 			// The person who filtered this broke it.
-			return array();
+			return [];
 		}
 
 		return $required_plugins;
