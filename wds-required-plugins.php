@@ -615,7 +615,7 @@ final class WDS_Required_Plugins {
 
 		// If we still didn't load, assume our text domain is right where we are.
 		$locale = apply_filters( 'plugin_locale', get_locale(), 'wds-required-plugins' );
-		$mofile = dirname( __FILE__ ) . '/languages/wds-required-plugins-' . $locale . '.mo';
+		$mofile = __DIR__ . '/languages/wds-required-plugins-' . $locale . '.mo';
 		load_textdomain( 'wds-required-plugins', $mofile );
 		self::$l10n_done = true;
 	}
