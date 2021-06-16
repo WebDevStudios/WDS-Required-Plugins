@@ -388,7 +388,7 @@ final class WDS_Required_Plugins {
 	 *
 	 * @return array
 	 */
-	public function filter_plugin_links( $actions = array(), $plugin ) {
+	public function filter_plugin_links( $actions = [], $plugin ) {
 
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
@@ -508,7 +508,7 @@ final class WDS_Required_Plugins {
 		 *
 		 * @var array
 		 */
-		$required_plugins = apply_filters( 'wds_required_plugins', array() );
+		$required_plugins = apply_filters( 'wds_required_plugins', [] );
 		if ( ! is_array( $required_plugins ) ) {
 
 			// The person who filtered this broke it.
@@ -555,7 +555,7 @@ final class WDS_Required_Plugins {
 		 *
 		 * @var array
 		 */
-		$required_plugins = apply_filters( 'wds_network_required_plugins', array() );
+		$required_plugins = apply_filters( 'wds_network_required_plugins', [] );
 		if ( ! is_array( $required_plugins ) ) {
 
 			// The person who filtered this broke it.
