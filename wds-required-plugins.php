@@ -388,8 +388,9 @@ final class WDS_Required_Plugins {
 	 *
 	 * @return array
 	 */
-	public function filter_plugin_links( $actions = [], $plugin ) {
-
+	public function filter_plugin_links( $actions, $plugin ) {
+		// HOTFIX to prevent ugly and anoying DEPRECATED messages
+		$actions = (array) $actions;
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 
