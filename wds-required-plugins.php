@@ -5,7 +5,7 @@
  * Description: Forcefully require specific plugins to be activated.
  * Author:      WebDevStudios
  * Author URI:  http://webdevstudios.com
- * Version:     1.2.1
+ * Version:     1.3.0
  * Domain:      wds-required-plugins
  * License:     GPLv2
  * Path:        languages
@@ -388,8 +388,8 @@ final class WDS_Required_Plugins {
 	 *
 	 * @return array
 	 */
-	public function filter_plugin_links( $actions = [], $plugin ) {
-
+	public function filter_plugin_links( $actions, $plugin ) {
+		$actions = (array) $actions;
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 
@@ -595,20 +595,23 @@ final class WDS_Required_Plugins {
 			return;
 		}
 
+		//
+		$languages_path = dirname( __FILE__, ) . '/languages';
+
 		// Try to load mu-plugin textdomain.
-		if ( load_muplugin_textdomain( 'wds-required-plugins', '/languages/' ) ) {
+		if ( load_muplugin_textdomain( 'wds-required-plugins', str_replace( WPMU_PLUGIN_DIR, '', $languages_path ) ) ) {
 			self::$l10n_done = true;
 			return;
 		}
 
 		// If we didn't load, load as a plugin.
-		if ( load_plugin_textdomain( 'wds-required-plugins', false, '/languages/' ) ) {
+		if ( load_plugin_textdomain( 'wds-required-plugins', false, str_replace( WP_PLUGIN_DIR, '', $languages_path ) ) ) {
 			self::$l10n_done = true;
 			return;
 		}
 
 		// If we didn't load yet, load as a theme.
-		if ( load_theme_textdomain( 'wds-required-plugins', '/languages/' ) ) {
+		if ( load_theme_textdomain( 'wds-required-plugins', $languages_path ) ) {
 			self::$l10n_done = true;
 			return;
 		}
