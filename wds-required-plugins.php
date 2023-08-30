@@ -595,23 +595,22 @@ final class WDS_Required_Plugins {
 			return;
 		}
 
-		//
-		$languages_path = dirname( __FILE__, ) . '/languages';
+		$languages_path = dirname( plugin_basename( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'languages';
 
 		// Try to load mu-plugin textdomain.
-		if ( load_muplugin_textdomain( 'wds-required-plugins', str_replace( WPMU_PLUGIN_DIR, '', $languages_path ) ) ) {
+		if ( load_muplugin_textdomain( 'wds-required-plugins', $languages_path ) ) {
 			self::$l10n_done = true;
 			return;
 		}
 
 		// If we didn't load, load as a plugin.
-		if ( load_plugin_textdomain( 'wds-required-plugins', false, str_replace( WP_PLUGIN_DIR, '', $languages_path ) ) ) {
+		if ( load_plugin_textdomain( 'wds-required-plugins', false, $languages_path ) ) {
 			self::$l10n_done = true;
 			return;
 		}
 
 		// If we didn't load yet, load as a theme.
-		if ( load_theme_textdomain( 'wds-required-plugins', $languages_path ) ) {
+		if ( load_theme_textdomain( 'wds-required-plugins', dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'languages' ) ) {
 			self::$l10n_done = true;
 			return;
 		}
