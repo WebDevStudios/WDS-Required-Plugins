@@ -126,7 +126,7 @@ final class WDS_Required_Plugins {
 		add_filter( 'all_plugins', [ $this, 'maybe_remove_plugins_from_list' ] );
 
 		// Load text domain.
-		add_action( 'plugins_loaded', [ $this, 'l10n' ] );
+		add_action( 'init', [ $this, 'l10n' ] );
 	}
 
 	/**
