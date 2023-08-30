@@ -5,10 +5,10 @@
  * Description: Forcefully require specific plugins to be activated.
  * Author:      WebDevStudios
  * Author URI:  http://webdevstudios.com
- * Version:     1.2.1
- * Domain:      wds-required-plugins
+ * Version:     1.3.0
+ * Text Domain: wds-required-plugins
+ * Domain Path: /languages
  * License:     GPLv2
- * Path:        languages
  * Props:       1.0.0 - Patrick Garman, Justin Sternberg, Brad Parbs
  *
  * @package     WDS_Required_Plugins
@@ -126,7 +126,7 @@ final class WDS_Required_Plugins {
 		add_filter( 'all_plugins', [ $this, 'maybe_remove_plugins_from_list' ] );
 
 		// Load text domain.
-		add_action( 'plugins_loaded', [ $this, 'l10n' ] );
+		add_action( 'init', [ $this, 'l10n' ] );
 	}
 
 	/**
@@ -388,8 +388,8 @@ final class WDS_Required_Plugins {
 	 *
 	 * @return array
 	 */
-	public function filter_plugin_links( $actions = [], $plugin ) {
-
+	public function filter_plugin_links( $actions, $plugin ) {
+		$actions = (array) $actions;
 		// Get our required plugins for network + normal.
 		$required_plugins = array_unique( array_merge( $this->get_required_plugins(), $this->get_network_required_plugins() ) );
 
@@ -595,20 +595,22 @@ final class WDS_Required_Plugins {
 			return;
 		}
 
+		$languages_path = dirname( plugin_basename( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'languages';
+
 		// Try to load mu-plugin textdomain.
-		if ( load_muplugin_textdomain( 'wds-required-plugins', '/languages/' ) ) {
+		if ( load_muplugin_textdomain( 'wds-required-plugins', $languages_path ) ) {
 			self::$l10n_done = true;
 			return;
 		}
 
 		// If we didn't load, load as a plugin.
-		if ( load_plugin_textdomain( 'wds-required-plugins', false, '/languages/' ) ) {
+		if ( load_plugin_textdomain( 'wds-required-plugins', false, $languages_path ) ) {
 			self::$l10n_done = true;
 			return;
 		}
 
 		// If we didn't load yet, load as a theme.
-		if ( load_theme_textdomain( 'wds-required-plugins', '/languages/' ) ) {
+		if ( load_theme_textdomain( 'wds-required-plugins', dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'languages' ) ) {
 			self::$l10n_done = true;
 			return;
 		}

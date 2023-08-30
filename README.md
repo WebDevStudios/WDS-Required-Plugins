@@ -41,9 +41,12 @@ You will have to require it in e.g. `mu-plugins/wds-required-plugins-list.php`:
 require WPMU_PLUGIN_DIR . '/wds-required-plugins/wds-required-plugins.php';
 
 function wds_required_plugins_add( $required ) {
-    return array_merge( $required, array(
-        'my-plugin/my-plugin.php`,
-    ) );
+    return array_merge(
+      $required,
+      [
+        'my-plugin/my-plugin.php',
+      ]
+    );
 }
 add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
 
@@ -62,13 +65,13 @@ add_filter( 'wds_network_required_plugins', 'wds_required_plugins_add' );
  * @return array           Modified array of required plugins.
  */
 function wds_required_plugins_add( $required ) {
-
-	$required = array_merge( $required, array(
-		'jetpack/jetpack.php',
-		'sample-plugin/sample-plugin.php',
-	) );
-
-	return $required;
+  return array_merge(
+    $required,
+    [
+      'jetpack/jetpack.php',
+      'sample-plugin/sample-plugin.php',
+    ]
+  );
 }
 add_filter( 'wds_required_plugins', 'wds_required_plugins_add' );
 ```
