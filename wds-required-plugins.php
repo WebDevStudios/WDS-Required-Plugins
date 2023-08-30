@@ -6,9 +6,9 @@
  * Author:      WebDevStudios
  * Author URI:  http://webdevstudios.com
  * Version:     1.3.0
- * Domain:      wds-required-plugins
+ * Text Domain: wds-required-plugins
+ * Domain Path: /languages
  * License:     GPLv2
- * Path:        languages
  * Props:       1.0.0 - Patrick Garman, Justin Sternberg, Brad Parbs
  *
  * @package     WDS_Required_Plugins
