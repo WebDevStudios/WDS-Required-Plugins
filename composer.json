@@ -3,6 +3,6 @@
 	"type": "wordpress-muplugin",
 	"description": "Make certain plugins required so that they cannot be (easily) deactivated.",
 	"require": {
-		"composer/installers": "~1.0"
+		"composer/installers": "~1.0 || ~2.0"
 	}
 }
